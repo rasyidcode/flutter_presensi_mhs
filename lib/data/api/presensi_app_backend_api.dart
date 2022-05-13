@@ -1,23 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_presensi_mhs/data/exceptions/sign_in_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/sign_out_exception.dart';
-import 'package:flutter_presensi_mhs/data/model/auth/sign_in.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/login_exception.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/logout_exception.dart';
+import 'package:flutter_presensi_mhs/data/model/auth/login.dart';
 import 'package:http/http.dart' as http;
+
+const BASE_API_URL = 'https://presensiapp.my.id/api/v1';
 
 class PresensiAppBackendApi {
   final http.Client _client;
-  final String _baseUrl = 'http://192.168.1.6/api/v1';
 
   PresensiAppBackendApi(this._client);
 
-  // auth - sign in
-  Future<SignIn?> signIn({
+  // auth - login
+  Future<Login?> login({
     required String username,
     required String password,
   }) async {
-    final urlEncoded = Uri.encodeFull(_baseUrl + '/signIn');
+    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/login');
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
@@ -28,18 +29,18 @@ class PresensiAppBackendApi {
     );
 
     if (response.statusCode != 200) {
-      throw SignInException(jsonDecode(response.body)['message']);
+      throw LoginException(jsonDecode(response.body)['message']);
     }
-
-    return SignIn.fromJson(response.body);
+    // print(response.body);
+    return Login.fromJson(response.body);
   }
 
-  // auth - sign out
-  Future<void> signOut({
+  // auth - logout
+  Future<String?> logout({
     required accessToken,
     required refreshToken,
   }) async {
-    final urlEncoded = Uri.encodeFull(_baseUrl + '/signOut');
+    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/logout');
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {
@@ -49,8 +50,10 @@ class PresensiAppBackendApi {
     );
 
     if (response.statusCode != 200) {
-      throw SignOutException(jsonDecode(response.body)['message']);
+      throw LogoutException(jsonDecode(response.body)['message']);
     }
+
+    return jsonDecode(response.body)['message'];
   }
 
   // todo: auth - renew access token api
