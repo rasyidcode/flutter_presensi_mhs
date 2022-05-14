@@ -1,0 +1,46 @@
+{
+    "data": [
+        {
+            "id": "129",
+            "nip_dosen": "69.12345.00",
+            "nama_dosen": "Vladimir Putin",
+            "nama_kelas": "SUNI",
+            "matkul": "Sejarah Uni Soviet",
+            "date": "2022-05-14",
+            "begin_time": "08:00",
+            "end_time": "10:00",
+            "qr_secret": "627bf307e0002",
+            "now_time": "10:15",
+            "status_presensi": "absen",
+            "status_perkuliahan": "done"
+        },
+        {
+            "id": "130",
+            "nip_dosen": "55.12345.99",
+            "nama_dosen": "Joe Biden",
+            "nama_kelas": "PT",
+            "matkul": "Pengenalan Teknologi",
+            "date": "2022-05-14",
+            "begin_time": "11:00",
+            "end_time": "13:30",
+            "qr_secret": null,
+            "now_time": "10:15",
+            "status_presensi": null,
+            "status_perkuliahan": "not_started"
+        },
+        {
+            "id": "131",
+            "nip_dosen": "55.12345.98",
+            "nama_dosen": "Barrack Obama",
+            "nama_kelas": "PTL",
+            "matkul": "Pemrograman Tingkat Lanjut",
+            "date": "2022-05-14",
+            "begin_time": "15:20",
+            "end_time": "17:00",
+            "qr_secret": null,
+            "now_time": "10:15",
+            "status_presensi": null,
+            "status_perkuliahan": "not_started"
+        }
+    ]
+}

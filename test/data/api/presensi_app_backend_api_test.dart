@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_presensi_mhs/data/api/presensi_app_backend_api.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/login_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/logout_exception.dart';
-import 'package:flutter_presensi_mhs/data/model/auth/login.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
+import 'package:flutter_presensi_mhs/data/model/auth/auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +27,7 @@ void main() {
     test('must success when login called with given username and password',
         () async {
       when(mockClient.post(
-        Uri.parse(Uri.encodeFull(BASE_API_URL + '/login')),
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/auth/login')),
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       )).thenAnswer(
@@ -44,7 +43,7 @@ void main() {
       var loginResult = await api.login(username: 'test', password: '12345');
 
       expect(loginResult, isNotNull);
-      expect(loginResult, const TypeMatcher<Login?>());
+      expect(loginResult, const TypeMatcher<Auth?>());
       expect(
           loginResult?.accessToken,
           startsWith(
@@ -57,7 +56,7 @@ void main() {
 
     test('throw a LoginException error when the creds does not match', () {
       when(mockClient.post(
-        Uri.parse(Uri.encodeFull(BASE_API_URL + '/login')),
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/auth/login')),
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       )).thenAnswer(
@@ -73,7 +72,7 @@ void main() {
       expect(
           () async =>
               await api.login(username: 'wronguser', password: 'wrongpass'),
-          throwsA(const TypeMatcher<LoginException>()));
+          throwsA(const TypeMatcher<ApiAccessErrorException>()));
     });
   });
   group('logout', () {
@@ -81,7 +80,7 @@ void main() {
       when(
         mockClient.post(
           Uri.parse(
-            Uri.encodeFull(BASE_API_URL + '/logout'),
+            Uri.encodeFull(BASE_API_URL + '/auth/logout'),
           ),
           headers: anyNamed('headers'),
         ),
@@ -109,7 +108,7 @@ void main() {
       when(
         mockClient.post(
           Uri.parse(
-            Uri.encodeFull(BASE_API_URL + '/logout'),
+            Uri.encodeFull(BASE_API_URL + '/auth/logout'),
           ),
           headers: anyNamed('headers'),
         ),
@@ -128,7 +127,7 @@ void main() {
                 accessToken: 'correct access token',
                 refreshToken: 'wrong access token',
               ),
-          throwsA(const TypeMatcher<LogoutException>()));
+          throwsA(const TypeMatcher<ApiAccessErrorException>()));
     });
   });
   group('getPerkuliahan', () {});
