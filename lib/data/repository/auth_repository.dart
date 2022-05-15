@@ -1,21 +1,41 @@
 import 'dart:ffi';
 
 import 'package:flutter_presensi_mhs/data/api/presensi_app_backend_api.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/login_exception.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/login_null_result_exception.dart';
+import 'package:flutter_presensi_mhs/data/model/local/auth.dart' as local;
+import 'package:flutter_presensi_mhs/data/model/auth/auth.dart' as api;
+import 'package:flutter_presensi_mhs/data/provider/auth_provider.dart';
 
 class AuthRepository {
-  PresensiAppBackendApi _presensiAppBackendApi;
+  final PresensiAppBackendApi _presensiAppBackendApi;
+  final AuthProvider _authProvider;
 
-  AuthRepository(this._presensiAppBackendApi);
+  AuthRepository(this._presensiAppBackendApi, this._authProvider);
 
-  Future<void> login(String username, String password) async {
+  Future<api.Auth> login(String username, String password) async {
     final loginApiResult = await _presensiAppBackendApi.login(
       username: username,
       password: password,
     );
 
-    if (loginApiResult == null) throw LoginException('Login api returns null');
+    if (loginApiResult == null) {
+      throw LoginNullResultException('Login api returns null');
+    }
 
-    // todo: store the accessToken and refreshToken to database
+    _authProvider.saveAuth(local.Auth((b) => b
+      ..id = null
+      ..accessToken = loginApiResult.accessToken
+      ..refreshToken = loginApiResult.refreshToken
+      ..createdAt = DateTime.now().millisecondsSinceEpoch ~/ 1000));
+
+    return loginApiResult;
+  }
+
+  Future<String?> logout(String accessToken, String refreshToken) async {
+    final logoutResult = await _presensiAppBackendApi.logout(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    );
+    return logoutResult;
   }
 }
