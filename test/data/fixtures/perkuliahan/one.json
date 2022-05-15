@@ -1,9 +1,14 @@
 {
-    "id": "129",
-    "nama_dosen": "Vladimir Putin",
-    "nama_kelas": "SUNI",
-    "matkul": "Sejarah Uni Soviet",
-    "date": "2022-05-14",
-    "begin_time": "08:00",
-    "end_time": "10:00"
+    "id": "1",
+    "nip_dosen": "55.12345.99",
+    "nama_dosen": "Joe Biden",
+    "nama_kelas": "PP",
+    "matkul": "Pengenalan Pemrograman",
+    "date": "2022-04-25",
+    "begin_time": "07:00",
+    "end_time": "11:00",
+    "qr_secret": null,
+    "now_time": "19:32",
+    "status_presensi": null,
+    "status_perkuliahan": "done"
 }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_presensi_mhs/data/api/presensi_app_backend_api.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/model/auth/auth.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
@@ -130,5 +132,116 @@ void main() {
           throwsA(const TypeMatcher<ApiAccessErrorException>()));
     });
   });
-  group('getPerkuliahan', () {});
+  group('getPerkuliahanList', () {
+    test('successfully getting the list of perkuliahan today', () async {
+      when(mockClient.get(
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/perkuliahan')),
+        headers: anyNamed('headers'),
+      )).thenAnswer(
+        (_) async => http.Response(
+          fixtures('perkuliahan/list'),
+          200,
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
+          },
+        ),
+      );
+
+      var perkuliahanList = await api.getPerkuliahanList(
+          accessToken:
+              'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDbGFtZXJfYWNjZXNzX3Rva2VuIiwiYXVkIjoiQXVkZXJfYWNjZXNzX3Rva2VuIiwiaWF0IjoxNjUyNTAwODU2LCJleHAiOjE2NTI1MDE0NTYsImRhdGEiOnsiaWQiOiI1IiwidXNlcm5hbWUiOiIxMjM0NTY3ODkiLCJuYW1lIjoiSm9rbyBXaWRvZG8iLCJlbWFpbCI6Impva29AM3BlcmlvZGUuY29tIn19.QM5pw7qcq70zrlwmR4uIVWRO2nR28s39mtbnZdBXkso');
+      expect(perkuliahanList, isNotNull);
+      expect(perkuliahanList, const TypeMatcher<PerkuliahanList>());
+      expect(perkuliahanList?.data, isNotEmpty);
+      expect(perkuliahanList?.data.first?.id, "129");
+    });
+    test('failed to get list, no perkuliahan found', () {
+      when(mockClient.get(
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/perkuliahan')),
+        headers: anyNamed('headers'),
+      )).thenAnswer(
+        (_) async => http.Response(
+          fixtures('perkuliahan/list_not_found'),
+          404,
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
+          },
+        ),
+      );
+
+      expect(
+          () async => api.getPerkuliahanList(
+              accessToken:
+                  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDbGFtZXJfYWNjZXNzX3Rva2VuIiwiYXVkIjoiQXVkZXJfYWNjZXNzX3Rva2VuIiwiaWF0IjoxNjUyNTAwODU2LCJleHAiOjE2NTI1MDE0NTYsImRhdGEiOnsiaWQiOiI1IiwidXNlcm5hbWUiOiIxMjM0NTY3ODkiLCJuYW1lIjoiSm9rbyBXaWRvZG8iLCJlbWFpbCI6Impva29AM3BlcmlvZGUuY29tIn19.QM5pw7qcq70zrlwmR4uIVWRO2nR28s39mtbnZdBXkso'),
+          throwsA(const TypeMatcher<ApiAccessErrorException>()));
+    });
+    test('failed to get list, no user found', () {
+      when(mockClient.get(
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/perkuliahan')),
+        headers: anyNamed('headers'),
+      )).thenAnswer(
+        (_) async => http.Response(
+          fixtures('perkuliahan/list_not_found'),
+          HttpStatus.badRequest,
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
+          },
+        ),
+      );
+
+      expect(
+          () async => api.getPerkuliahanList(
+              accessToken:
+                  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDbGFtZXJfYWNjZXNzX3Rva2VuIiwiYXVkIjoiQXVkZXJfYWNjZXNzX3Rva2VuIiwiaWF0IjoxNjUyNTAwODU2LCJleHAiOjE2NTI1MDE0NTYsImRhdGEiOnsiaWQiOiI1IiwidXNlcm5hbWUiOiIxMjM0NTY3ODkiLCJuYW1lIjoiSm9rbyBXaWRvZG8iLCJlbWFpbCI6Impva29AM3BlcmlvZGUuY29tIn19.QM5pw7qcq70zrlwmR4uIVWRO2nR28s39mtbnZdBXkso'),
+          throwsA(const TypeMatcher<ApiAccessErrorException>()));
+    });
+  });
+  group('getDetailPerkuliahan', () {
+    test('successfully getting the perkuliahan detail', () async {
+      when(mockClient.get(
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/perkuliahan/1')),
+        headers: anyNamed('headers'),
+      )).thenAnswer(
+        (_) async => http.Response(
+          fixtures('perkuliahan/one'),
+          200,
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
+          },
+        ),
+      );
+
+      var perkuliahanDetail = await api.getDetailPerkuliahan(
+        accessToken:
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDbGFtZXJfYWNjZXNzX3Rva2VuIiwiYXVkIjoiQXVkZXJfYWNjZXNzX3Rva2VuIiwiaWF0IjoxNjUyNTAwODU2LCJleHAiOjE2NTI1MDE0NTYsImRhdGEiOnsiaWQiOiI1IiwidXNlcm5hbWUiOiIxMjM0NTY3ODkiLCJuYW1lIjoiSm9rbyBXaWRvZG8iLCJlbWFpbCI6Impva29AM3BlcmlvZGUuY29tIn19.QM5pw7qcq70zrlwmR4uIVWRO2nR28s39mtbnZdBXkso',
+        perkuliahanId: 1,
+      );
+
+      expect(perkuliahanDetail, isNotNull);
+      expect(perkuliahanDetail, const TypeMatcher<PerkuliahanItem>());
+      expect(perkuliahanDetail?.id, '1');
+    });
+    test('failed to get the detail, not found', () {
+      when(mockClient.get(
+        Uri.parse(Uri.encodeFull(BASE_API_URL + '/perkuliahan/1')),
+        headers: anyNamed('headers'),
+      )).thenAnswer(
+        (_) async => http.Response(
+          fixtures('perkuliahan/one_not_found'),
+          HttpStatus.notFound,
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8'
+          },
+        ),
+      );
+
+      expect(
+          () async => api.getDetailPerkuliahan(
+                accessToken:
+                    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDbGFtZXJfYWNjZXNzX3Rva2VuIiwiYXVkIjoiQXVkZXJfYWNjZXNzX3Rva2VuIiwiaWF0IjoxNjUyNTAwODU2LCJleHAiOjE2NTI1MDE0NTYsImRhdGEiOnsiaWQiOiI1IiwidXNlcm5hbWUiOiIxMjM0NTY3ODkiLCJuYW1lIjoiSm9rbyBXaWRvZG8iLCJlbWFpbCI6Impva29AM3BlcmlvZGUuY29tIn19.QM5pw7qcq70zrlwmR4uIVWRO2nR28s39mtbnZdBXkso',
+                perkuliahanId: 1,
+              ),
+          throwsA(const TypeMatcher<ApiAccessErrorException>()));
+    });
+  });
 }

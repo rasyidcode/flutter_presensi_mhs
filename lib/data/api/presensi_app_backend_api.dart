@@ -79,7 +79,7 @@ class PresensiAppBackendApi {
   // list matakuliah hari ini
   Future<PerkuliahanList?> getPerkuliahanList(
       {required String accessToken}) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + 'perkuliahan');
+    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/perkuliahan');
     final response = await _client.get(
       Uri.parse(urlEncoded),
       headers: {
@@ -94,12 +94,13 @@ class PresensiAppBackendApi {
     return PerkuliahanList.fromJson(response.body);
   }
 
-  // todo: detail perkuliahan
+  // detail perkuliahan
   Future<PerkuliahanItem?> getDetailPerkuliahan({
     required String accessToken,
     required int perkuliahanId,
   }) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + 'perkuliahan');
+    final urlEncoded =
+        Uri.encodeFull(BASE_API_URL + '/perkuliahan/$perkuliahanId');
     final response = await _client.get(
       Uri.parse(urlEncoded),
       headers: {
