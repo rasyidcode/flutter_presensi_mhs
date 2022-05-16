@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
-import 'package:flutter_presensi_mhs/ui/detail/detail_page.dart';
-import 'package:flutter_presensi_mhs/ui/home/home_page.dart';
+import 'package:flutter_presensi_mhs/injection_container.dart';
 import 'package:flutter_presensi_mhs/ui/splash/splash_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  initKiwi();
   runApp(const MyApp());
 }
 
