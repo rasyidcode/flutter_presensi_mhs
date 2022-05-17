@@ -23,7 +23,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } on LoginNullResultException catch (e) {
         emit(LoginState.error(e.message));
       } on Exception catch (_) {
-        emit(LoginState.error('Unknown error'));
+        emit(LoginState.error('Something went wrong'));
       }
     });
   }

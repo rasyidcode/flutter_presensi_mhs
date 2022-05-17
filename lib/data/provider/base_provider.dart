@@ -17,6 +17,13 @@ abstract class BaseProvider {
           createdAt integer
         )
       ''');
+      await db.execute('''
+        create table if not exists firstTime (
+          id integer primary key autoincrement,
+          firstTime integer null,
+          createdAt integer
+        )
+      ''');
     });
   }
 

@@ -1,8 +1,14 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_presensi_mhs/ui/home/home_page.dart';
+import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
+import 'package:flutter_presensi_mhs/ui/splash/splash_bloc.dart';
+import 'package:flutter_presensi_mhs/ui/splash/splash_event.dart';
+import 'package:flutter_presensi_mhs/ui/splash/splash_state.dart';
 import 'package:flutter_presensi_mhs/ui/welcome/welcome_page.dart';
+import 'package:kiwi/kiwi.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -12,25 +18,67 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  final SplashBloc _splashBloc = KiwiContainer().resolve<SplashBloc>();
+
   @override
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      // todo: check if this first time or not
-      //       if already login aka records found on db local, go to home page
-      //       if not first time, go to login page,
-      //       if first time, go to welcome page,
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const WelcomePage()));
+      _splashBloc.add(GetAuth());
     });
   }
 
   @override
+  void dispose() {
+    _splashBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Image.asset(
-          'assets/logo_mhs.png',
+    return BlocProvider(
+      create: (_) => _splashBloc,
+      child: Scaffold(
+        body: BlocListener<SplashBloc, SplashState>(
+          listener: (context, state) {
+            // has logged in
+            if (state.isLoggedIn) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const HomePage()));
+            }
+
+            // not logged in
+            if (state.isAuthNotFound) {
+              _splashBloc.add(GetFirstTime());
+
+              // not first time go to login page, otherwise welcome page
+              if (state.isFirstTime) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const WelcomePage()));
+              } else {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const LoginPage()));
+              }
+            }
+          },
+          child: BlocBuilder<SplashBloc, SplashState>(
+            bloc: _splashBloc,
+            builder: (context, state) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/logo_mhs.png',
+                  ),
+                  state.isLoading ? const Spacer() : Container(),
+                  state.isLoading
+                      ? const CircularProgressIndicator()
+                      : Container()
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
