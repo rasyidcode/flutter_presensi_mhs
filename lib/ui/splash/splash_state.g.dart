@@ -15,8 +15,6 @@ class _$SplashState extends SplashState {
   final local_auth.Auth auth;
   @override
   final bool isFirstTime;
-  @override
-  final bool isAuthNotFound;
 
   factory _$SplashState([void Function(SplashStateBuilder)? updates]) =>
       (new SplashStateBuilder()..update(updates)).build();
@@ -25,8 +23,7 @@ class _$SplashState extends SplashState {
       {required this.isLoading,
       required this.error,
       required this.auth,
-      required this.isFirstTime,
-      required this.isAuthNotFound})
+      required this.isFirstTime})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         isLoading, 'SplashState', 'isLoading');
@@ -34,8 +31,6 @@ class _$SplashState extends SplashState {
     BuiltValueNullFieldError.checkNotNull(auth, 'SplashState', 'auth');
     BuiltValueNullFieldError.checkNotNull(
         isFirstTime, 'SplashState', 'isFirstTime');
-    BuiltValueNullFieldError.checkNotNull(
-        isAuthNotFound, 'SplashState', 'isAuthNotFound');
   }
 
   @override
@@ -52,16 +47,14 @@ class _$SplashState extends SplashState {
         isLoading == other.isLoading &&
         error == other.error &&
         auth == other.auth &&
-        isFirstTime == other.isFirstTime &&
-        isAuthNotFound == other.isAuthNotFound;
+        isFirstTime == other.isFirstTime;
   }
 
   @override
   int get hashCode {
     return $jf($jc(
-        $jc($jc($jc($jc(0, isLoading.hashCode), error.hashCode), auth.hashCode),
-            isFirstTime.hashCode),
-        isAuthNotFound.hashCode));
+        $jc($jc($jc(0, isLoading.hashCode), error.hashCode), auth.hashCode),
+        isFirstTime.hashCode));
   }
 
   @override
@@ -70,8 +63,7 @@ class _$SplashState extends SplashState {
           ..add('isLoading', isLoading)
           ..add('error', error)
           ..add('auth', auth)
-          ..add('isFirstTime', isFirstTime)
-          ..add('isAuthNotFound', isAuthNotFound))
+          ..add('isFirstTime', isFirstTime))
         .toString();
   }
 }
@@ -96,11 +88,6 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
   bool? get isFirstTime => _$this._isFirstTime;
   set isFirstTime(bool? isFirstTime) => _$this._isFirstTime = isFirstTime;
 
-  bool? _isAuthNotFound;
-  bool? get isAuthNotFound => _$this._isAuthNotFound;
-  set isAuthNotFound(bool? isAuthNotFound) =>
-      _$this._isAuthNotFound = isAuthNotFound;
-
   SplashStateBuilder();
 
   SplashStateBuilder get _$this {
@@ -110,7 +97,6 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
       _error = $v.error;
       _auth = $v.auth.toBuilder();
       _isFirstTime = $v.isFirstTime;
-      _isAuthNotFound = $v.isAuthNotFound;
       _$v = null;
     }
     return this;
@@ -139,9 +125,7 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
                   error, 'SplashState', 'error'),
               auth: auth.build(),
               isFirstTime: BuiltValueNullFieldError.checkNotNull(
-                  isFirstTime, 'SplashState', 'isFirstTime'),
-              isAuthNotFound: BuiltValueNullFieldError.checkNotNull(
-                  isAuthNotFound, 'SplashState', 'isAuthNotFound'));
+                  isFirstTime, 'SplashState', 'isFirstTime'));
     } catch (_) {
       late String _$failedField;
       try {

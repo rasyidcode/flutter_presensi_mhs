@@ -24,6 +24,8 @@ class _$PerkuliahanListSerializer
       serializers.serialize(object.data,
           specifiedType: const FullType(
               BuiltList, const [const FullType.nullable(PerkuliahanItem)])),
+      'total',
+      serializers.serialize(object.total, specifiedType: const FullType(int)),
     ];
 
     return result;
@@ -47,6 +49,10 @@ class _$PerkuliahanListSerializer
                 const FullType.nullable(PerkuliahanItem)
               ]))! as BuiltList<Object?>);
           break;
+        case 'total':
+          result.total = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int;
+          break;
       }
     }
 
@@ -57,12 +63,15 @@ class _$PerkuliahanListSerializer
 class _$PerkuliahanList extends PerkuliahanList {
   @override
   final BuiltList<PerkuliahanItem?> data;
+  @override
+  final int total;
 
   factory _$PerkuliahanList([void Function(PerkuliahanListBuilder)? updates]) =>
       (new PerkuliahanListBuilder()..update(updates)).build();
 
-  _$PerkuliahanList._({required this.data}) : super._() {
+  _$PerkuliahanList._({required this.data, required this.total}) : super._() {
     BuiltValueNullFieldError.checkNotNull(data, 'PerkuliahanList', 'data');
+    BuiltValueNullFieldError.checkNotNull(total, 'PerkuliahanList', 'total');
   }
 
   @override
@@ -76,17 +85,21 @@ class _$PerkuliahanList extends PerkuliahanList {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is PerkuliahanList && data == other.data;
+    return other is PerkuliahanList &&
+        data == other.data &&
+        total == other.total;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(0, data.hashCode));
+    return $jf($jc($jc(0, data.hashCode), total.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PerkuliahanList')..add('data', data))
+    return (newBuiltValueToStringHelper('PerkuliahanList')
+          ..add('data', data)
+          ..add('total', total))
         .toString();
   }
 }
@@ -100,12 +113,17 @@ class PerkuliahanListBuilder
       _$this._data ??= new ListBuilder<PerkuliahanItem?>();
   set data(ListBuilder<PerkuliahanItem?>? data) => _$this._data = data;
 
+  int? _total;
+  int? get total => _$this._total;
+  set total(int? total) => _$this._total = total;
+
   PerkuliahanListBuilder();
 
   PerkuliahanListBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _data = $v.data.toBuilder();
+      _total = $v.total;
       _$v = null;
     }
     return this;
@@ -126,7 +144,11 @@ class PerkuliahanListBuilder
   _$PerkuliahanList build() {
     _$PerkuliahanList _$result;
     try {
-      _$result = _$v ?? new _$PerkuliahanList._(data: data.build());
+      _$result = _$v ??
+          new _$PerkuliahanList._(
+              data: data.build(),
+              total: BuiltValueNullFieldError.checkNotNull(
+                  total, 'PerkuliahanList', 'total'));
     } catch (_) {
       late String _$failedField;
       try {

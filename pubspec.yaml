@@ -39,7 +39,7 @@ dependencies:
   kiwi: ^4.0.2
   http: ^0.13.4
   flutter_bloc: ^8.0.1
-  qr_code_scanner: ^0.4.0
+  qr_code_scanner: ^1.0.0
   sqflite: ^2.0.2+1
 
 dev_dependencies:

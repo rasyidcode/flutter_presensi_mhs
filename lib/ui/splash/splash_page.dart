@@ -47,18 +47,12 @@ class _SplashPageState extends State<SplashPage> {
                   MaterialPageRoute(builder: (_) => const HomePage()));
             }
 
-            // not logged in
-            if (state.isAuthNotFound) {
-              _splashBloc.add(GetFirstTime());
-
-              // not first time go to login page, otherwise welcome page
-              if (state.isFirstTime) {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const WelcomePage()));
-              } else {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const LoginPage()));
-              }
+            if (state.isFirstTime) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const WelcomePage()));
+            } else {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginPage()));
             }
           },
           child: BlocBuilder<SplashBloc, SplashState>(

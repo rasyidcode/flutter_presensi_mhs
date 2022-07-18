@@ -7,7 +7,7 @@ import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dar
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
 import 'package:http/http.dart' as http;
 
-const BASE_API_URL = 'https://presensiapp.my.id/api/v1';
+const baseApiURL = 'https://presensiapp-backend.test/api/v1';
 
 class PresensiAppBackendApi {
   final http.Client _client;
@@ -19,7 +19,7 @@ class PresensiAppBackendApi {
     required String username,
     required String password,
   }) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/auth/login');
+    final urlEncoded = Uri.encodeFull(baseApiURL + '/auth');
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
@@ -41,7 +41,7 @@ class PresensiAppBackendApi {
     required String accessToken,
     required String refreshToken,
   }) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/auth/logout');
+    final urlEncoded = Uri.encodeFull(baseApiURL + '/auth/logout');
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {
@@ -58,8 +58,8 @@ class PresensiAppBackendApi {
   }
 
   // auth - renew access token
-  Future<Auth?> renewAccessToken({required String refreshToken}) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/auth/renew-token');
+  Future<String?> renewAccessToken({required String refreshToken}) async {
+    final urlEncoded = Uri.encodeFull(baseApiURL + '/auth/renew-token');
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {
@@ -71,13 +71,13 @@ class PresensiAppBackendApi {
       throw ApiAccessErrorException(jsonDecode(response.body)['message']);
     }
 
-    return Auth.fromJson(response.body);
+    return jsonDecode(response.body)['access_token'];
   }
 
   // list matakuliah hari ini
   Future<PerkuliahanList?> getPerkuliahanList(
       {required String accessToken}) async {
-    final urlEncoded = Uri.encodeFull(BASE_API_URL + '/perkuliahan');
+    final urlEncoded = Uri.encodeFull(baseApiURL + '/perkuliahan');
     final response = await _client.get(
       Uri.parse(urlEncoded),
       headers: {
@@ -98,7 +98,7 @@ class PresensiAppBackendApi {
     required int perkuliahanId,
   }) async {
     final urlEncoded =
-        Uri.encodeFull(BASE_API_URL + '/perkuliahan/$perkuliahanId');
+        Uri.encodeFull(baseApiURL + '/perkuliahan/$perkuliahanId');
     final response = await _client.get(
       Uri.parse(urlEncoded),
       headers: {
@@ -113,12 +113,21 @@ class PresensiAppBackendApi {
     return PerkuliahanItem.fromJson(response.body);
   }
 
-  // todo: do presensi
-  Future<void> doPresensi({required accessToken}) async {}
+  Future<String?> doPresensi({
+    required String accessToken,
+    required String qrcode,
+  }) async {
+    final urlEncoded = Uri.encodeFull(baseApiURL + '/perkuliahan/do-presensi');
+    final response = await _client.post(
+      Uri.parse(urlEncoded),
+      headers: {HttpHeaders.authorizationHeader: accessToken},
+      body: {'qrsecret': qrcode},
+    );
 
-  // todo: list jadwal matkul
-  Future<void> getAllJadwal({required accessToken}) async {}
+    if (response.statusCode != 200) {
+      throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+    }
 
-  // todo: profile
-  Future<void> getProfile({required accessToken}) async {}
+    return jsonDecode(response.body)['status_presensi'];
+  }
 }

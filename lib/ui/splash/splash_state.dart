@@ -10,7 +10,6 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
   String get error;
   local_auth.Auth get auth;
   bool get isFirstTime;
-  bool get isAuthNotFound;
 
   bool get isLoggedIn =>
       !isLoading &&
@@ -31,7 +30,6 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = ''
       ..isFirstTime = false
-      ..isAuthNotFound = false
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -44,7 +42,6 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = true
       ..error = ''
       ..isFirstTime = false
-      ..isAuthNotFound = false
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -57,21 +54,7 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = ''
       ..isFirstTime = false
-      ..isAuthNotFound = false
       ..auth.replace(authLocal));
-  }
-
-  factory SplashState.noAuthFound() {
-    return SplashState((b) => b
-      ..isLoading = false
-      ..error = ''
-      ..isFirstTime = false
-      ..isAuthNotFound = true
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
   }
 
   factory SplashState.error(String errorMsg) {
@@ -79,7 +62,6 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = errorMsg
       ..isFirstTime = false
-      ..isAuthNotFound = false
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -92,7 +74,6 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = ''
       ..isFirstTime = ftVal
-      ..isAuthNotFound = false
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''

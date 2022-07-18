@@ -13,6 +13,7 @@ part 'perkuliahan_list.g.dart';
 abstract class PerkuliahanList
     implements Built<PerkuliahanList, PerkuliahanListBuilder> {
   BuiltList<PerkuliahanItem?> get data;
+  int get total;
 
   PerkuliahanList._();
 

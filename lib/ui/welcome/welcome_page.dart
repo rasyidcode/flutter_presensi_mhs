@@ -2,9 +2,30 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
+import 'package:flutter_presensi_mhs/ui/welcome/welcome_bloc.dart';
+import 'package:flutter_presensi_mhs/ui/welcome/welcome_event.dart';
+import 'package:kiwi/kiwi.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
+
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  final WelcomeBloc _welcomeBloc = KiwiContainer().resolve<WelcomeBloc>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _welcomeBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +69,10 @@ class WelcomePage extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                if (kDebugMode) {
-                  print('tapped');
-                }
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage()));
+                _welcomeBloc.add(CreateFirstTime());
+                print('ready to login');
+                // Navigator.of(context).push(MaterialPageRoute(
+                //     builder: (BuildContext context) => const LoginPage()));
               },
               child: const Text(
                 'Mulai',

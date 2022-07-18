@@ -1,12 +1,14 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/first_time_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/no_auth_found_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/provider_empty_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/provider_null_exception.dart';
 import 'package:flutter_presensi_mhs/data/model/local/auth.dart';
 import 'package:flutter_presensi_mhs/data/provider/base_provider.dart';
 
 class AuthProvider extends BaseProvider {
+  Future<void> updateToken(Auth authdata) async {
+    await db?.update('auth', authdata.toMap(),
+        where: 'id = ?', whereArgs: [authdata.id]);
+  }
+
   Future<void> saveAuth(Auth authdata) async {
     await db?.insert('auth', authdata.toMap());
   }
@@ -14,6 +16,7 @@ class AuthProvider extends BaseProvider {
   Future<Auth> getAuth() async {
     final auth =
         await db?.rawQuery('SELECT * FROM auth ORDER BY id DESC LIMIT 1');
+
     if (auth == null) {
       throw NoAuthFoundException();
     }
@@ -31,19 +34,5 @@ class AuthProvider extends BaseProvider {
         .toBuiltList();
 
     return auths[0];
-  }
-
-  Future<int> getFirstTime() async {
-    final firstTime =
-        await db?.rawQuery('SELECT * FROM firstTime ORDER BY id DESC LIMIT 1');
-    if (firstTime == null) {
-      throw FirstTimeException();
-    }
-
-    if (firstTime.isEmpty) {
-      throw FirstTimeException();
-    }
-
-    return firstTime.first['firstTime'] as int;
   }
 }
