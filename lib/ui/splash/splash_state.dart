@@ -10,9 +10,13 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
   String get error;
   local_auth.Auth get auth;
   bool get isFirstTime;
+  bool get isCreatingDB;
+  bool get isReadyToNavigate;
+  bool get isDBCreated;
+  String get statusMessage;
 
   bool get isLoggedIn =>
-      !isLoading &&
+      isLoading &&
       auth.id! != 0 &&
       auth.accessToken!.isNotEmpty &&
       auth.refreshToken!.isNotEmpty &&
@@ -30,6 +34,10 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = ''
       ..isFirstTime = false
+      ..isCreatingDB = false
+      ..isDBCreated = false
+      ..isReadyToNavigate = false
+      ..statusMessage = ''
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -42,6 +50,10 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = true
       ..error = ''
       ..isFirstTime = false
+      ..isCreatingDB = false
+      ..isDBCreated = false
+      ..isReadyToNavigate = false
+      ..statusMessage = 'Preparing...'
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -51,9 +63,13 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
 
   factory SplashState.loggedIn(local_auth.Auth authLocal) {
     return SplashState((b) => b
-      ..isLoading = false
+      ..isLoading = true
       ..error = ''
+      ..statusMessage = 'Auth Found'
       ..isFirstTime = false
+      ..isCreatingDB = false
+      ..isDBCreated = false
+      ..isReadyToNavigate = true
       ..auth.replace(authLocal));
   }
 
@@ -62,6 +78,10 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
       ..isLoading = false
       ..error = errorMsg
       ..isFirstTime = false
+      ..statusMessage = ''
+      ..isCreatingDB = false
+      ..isDBCreated = false
+      ..isReadyToNavigate = false
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''
@@ -70,10 +90,52 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
   }
 
   factory SplashState.firstTime(bool ftVal) {
+    String statusMsg = '';
+    if (ftVal) {
+      statusMsg = 'This is your first time';
+    } else {
+      statusMsg = 'Not your first time';
+    }
     return SplashState((b) => b
-      ..isLoading = false
+      ..isLoading = true
       ..error = ''
       ..isFirstTime = ftVal
+      ..statusMessage = statusMsg
+      ..isCreatingDB = false
+      ..isDBCreated = false
+      ..isReadyToNavigate = true
+      ..auth.replace(local_auth.Auth((b) => b
+        ..id = 0
+        ..accessToken = ''
+        ..refreshToken = ''
+        ..createdAt = 0)));
+  }
+
+  factory SplashState.dbCreating() {
+    return SplashState((b) => b
+      ..isLoading = true
+      ..error = ''
+      ..isFirstTime = false
+      ..isCreatingDB = true
+      ..isDBCreated = false
+      ..isReadyToNavigate = false
+      ..statusMessage = 'Initializing DB...'
+      ..auth.replace(local_auth.Auth((b) => b
+        ..id = 0
+        ..accessToken = ''
+        ..refreshToken = ''
+        ..createdAt = 0)));
+  }
+
+  factory SplashState.dbCreated() {
+    return SplashState((b) => b
+      ..isLoading = true
+      ..error = ''
+      ..isFirstTime = false
+      ..isCreatingDB = false
+      ..isDBCreated = true
+      ..isReadyToNavigate = false
+      ..statusMessage = 'DB Created...'
       ..auth.replace(local_auth.Auth((b) => b
         ..id = 0
         ..accessToken = ''

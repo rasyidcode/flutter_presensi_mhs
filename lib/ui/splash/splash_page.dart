@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_page.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:flutter_presensi_mhs/ui/splash/splash_bloc.dart';
@@ -23,9 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      _splashBloc.add(GetAuth());
-    });
+    _splashBloc.add(InitDB());
   }
 
   @override
@@ -40,40 +39,59 @@ class _SplashPageState extends State<SplashPage> {
       create: (_) => _splashBloc,
       child: Scaffold(
         body: BlocListener<SplashBloc, SplashState>(
-          listener: (context, state) {
-            // has logged in
-            if (state.isLoggedIn) {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const HomePage()));
-            }
+            listener: (context, state) {
+              // has logged in
+              if (state.isDBCreated) {
+                _splashBloc.add(GetAuth());
+              }
 
-            if (state.isFirstTime) {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const WelcomePage()));
-            } else {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginPage()));
-            }
-          },
-          child: BlocBuilder<SplashBloc, SplashState>(
-            bloc: _splashBloc,
-            builder: (context, state) {
-              return Column(
+              if (state.isReadyToNavigate) {
+                Future.delayed(const Duration(seconds: 2), () {
+                  if (state.isLoggedIn) {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const HomePage()));
+                  } else if (state.isFirstTime) {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const WelcomePage()));
+                  } else if (!state.isFirstTime) {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const LoginPage()));
+                  }
+                });
+              }
+            },
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
                     'assets/logo_mhs.png',
                   ),
-                  state.isLoading ? const Spacer() : Container(),
-                  state.isLoading
-                      ? const CircularProgressIndicator()
-                      : Container()
+                  BlocBuilder<SplashBloc, SplashState>(
+                      builder: (context, state) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 20.0),
+                        (state.isLoading || state.isCreatingDB)
+                            ? const CircularProgressIndicator(
+                                color: kPrimaryButtonColor)
+                            : Container(),
+                        const SizedBox(height: 20.0),
+                        Text(
+                          state.statusMessage,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              ?.copyWith(color: Colors.white),
+                        )
+                      ],
+                    );
+                  })
                 ],
-              );
-            },
-          ),
-        ),
+              ),
+            )),
       ),
     );
   }

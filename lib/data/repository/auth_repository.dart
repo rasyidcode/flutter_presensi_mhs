@@ -3,17 +3,16 @@ import 'package:flutter_presensi_mhs/data/exceptions/login_null_result_exception
 import 'package:flutter_presensi_mhs/data/model/local/auth.dart' as local;
 import 'package:flutter_presensi_mhs/data/model/auth/auth.dart' as api;
 import 'package:flutter_presensi_mhs/data/provider/auth_provider.dart';
+import 'package:flutter_presensi_mhs/data/provider/base_provider.dart';
 
 class AuthRepository {
-  final PresensiAppBackendApi _presensiAppBackendApi;
-  final AuthProvider _authProvider;
+  final PresensiAppApi _presensiAppApi;
+  final BaseProvider _provider;
 
-  AuthRepository(this._presensiAppBackendApi, this._authProvider) : super() {
-    _authProvider.open();
-  }
+  AuthRepository(this._presensiAppApi, this._provider);
 
   Future<api.Auth> login(String username, String password) async {
-    final loginApiResult = await _presensiAppBackendApi.login(
+    final loginApiResult = await _presensiAppApi.login(
       username: username,
       password: password,
     );
@@ -21,18 +20,16 @@ class AuthRepository {
     if (loginApiResult == null) {
       throw LoginNullResultException('Login api returns null');
     }
-
-    _authProvider.saveAuth(local.Auth((b) => b
+    await (_provider as AuthProvider).saveAuth(local.Auth((b) => b
       ..id = null
       ..accessToken = loginApiResult.accessToken
       ..refreshToken = loginApiResult.refreshToken
       ..createdAt = DateTime.now().millisecondsSinceEpoch ~/ 1000));
-
     return loginApiResult;
   }
 
   Future<String?> logout(String accessToken, String refreshToken) async {
-    final logoutResult = await _presensiAppBackendApi.logout(
+    final logoutResult = await _presensiAppApi.logout(
       accessToken: accessToken,
       refreshToken: refreshToken,
     );
@@ -40,16 +37,16 @@ class AuthRepository {
   }
 
   Future<String?> renewToken(String refreshToken) async {
-    final accessToken = await _presensiAppBackendApi.renewAccessToken(
-        refreshToken: refreshToken);
-    var auth = await _authProvider.getAuth();
+    final accessToken =
+        await _presensiAppApi.renewAccessToken(refreshToken: refreshToken);
+    var auth = await (_provider as AuthProvider).getAuth();
     auth.rebuild((b) => b..accessToken = accessToken);
-    _authProvider.updateToken(auth);
+    await (_provider as AuthProvider).updateToken(auth);
 
     return accessToken;
   }
 
   Future<local.Auth> getAuth() async {
-    return await _authProvider.getAuth();
+    return await (_provider as AuthProvider).getAuth();
   }
 }

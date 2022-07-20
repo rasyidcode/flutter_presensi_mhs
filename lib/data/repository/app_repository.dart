@@ -1,19 +1,22 @@
 import 'package:flutter_presensi_mhs/data/provider/app_provider.dart';
+import 'package:flutter_presensi_mhs/data/provider/base_provider.dart';
 
 class AppRepository {
-  final AppProvider _appProvider;
+  final BaseProvider _provider;
 
-  AppRepository(this._appProvider) : super() {
-    _appProvider.open();
+  AppRepository(this._provider);
+
+  Future initAppProvider() async {
+    await (_provider as AppProvider).initDatabase();
   }
 
   Future<int> getFirstTime() async {
-    final firstTime = await _appProvider.getFirstTime();
+    final firstTime = await (_provider as AppProvider).getFirstTime();
 
     return firstTime;
   }
 
   Future<void> createFirstTime() async {
-    await _appProvider.flagFirstTime();
+    await (_provider as AppProvider).flagFirstTime();
   }
 }

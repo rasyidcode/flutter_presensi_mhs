@@ -12,8 +12,26 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   SplashBloc(this._appRepository, this._authRepository)
       : super(SplashState.initial()) {
+    on<InitDB>((event, emit) async {
+      emit(SplashState.dbCreating());
+
+      // delay 3 sec
+      await Future.delayed(const Duration(seconds: 3), () => {});
+
+      try {
+        await _appRepository.initAppProvider();
+        emit(SplashState.dbCreated());
+      } on Exception catch (_) {
+        emit(SplashState.error('Init DB Failed'));
+      }
+    });
     on<GetAuth>((event, emit) async {
+      await Future.delayed(const Duration(seconds: 2), () => {});
+
       emit(SplashState.loading());
+
+      // delay 3 sec
+      await Future.delayed(const Duration(seconds: 3), () => {});
 
       try {
         final auth = await _authRepository.getAuth();

@@ -7,28 +7,25 @@ import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dar
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
 import 'package:http/http.dart' as http;
 
-const baseApiURL = 'https://presensiapp-backend.test/api/v1';
+const baseApiURL = 'https://presensiapp.my.id/api/v1';
 
-class PresensiAppBackendApi {
+class PresensiAppApi {
   final http.Client _client;
 
-  PresensiAppBackendApi(this._client);
+  PresensiAppApi(this._client);
 
   // auth - login
   Future<Auth?> login({
     required String username,
     required String password,
   }) async {
-    final urlEncoded = Uri.encodeFull(baseApiURL + '/auth');
     final response = await _client.post(
-      Uri.parse(urlEncoded),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+      Uri.parse(baseApiURL + '/auth'),
       body: {
         'username': username,
         'password': password,
       },
     );
-
     if (response.statusCode != 200) {
       throw ApiAccessErrorException(jsonDecode(response.body)['message']);
     }

@@ -10,11 +10,13 @@ abstract class LoginState implements Built<LoginState, LoginStateBuilder> {
   String get error;
   api.Auth get auth;
 
+  bool get isError => error.isNotEmpty;
+
   bool get isSuccess =>
       !isLoading &&
       auth.accessToken!.isNotEmpty &&
       auth.refreshToken!.isNotEmpty &&
-      error != '';
+      error == '';
 
   LoginState._();
 

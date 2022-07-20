@@ -15,6 +15,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<DoLogin>((event, emit) async {
       emit(LoginState.loading());
 
+      await Future.delayed(const Duration(seconds: 3), () => {});
+
       try {
         var loginResult = await _authRepository.login(username, password);
         emit(LoginState.success(loginResult));
@@ -22,8 +24,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginState.error(e.message));
       } on LoginNullResultException catch (e) {
         emit(LoginState.error(e.message));
-      } on Exception catch (_) {
-        emit(LoginState.error('Something went wrong'));
+      } on Exception catch (e) {
+        emit(LoginState.error('Something went wrong:$e'));
       }
     });
   }

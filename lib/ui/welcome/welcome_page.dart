@@ -70,9 +70,8 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               onPressed: () {
                 _welcomeBloc.add(CreateFirstTime());
-                print('ready to login');
-                // Navigator.of(context).push(MaterialPageRoute(
-                //     builder: (BuildContext context) => const LoginPage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage()));
               },
               child: const Text(
                 'Mulai',
