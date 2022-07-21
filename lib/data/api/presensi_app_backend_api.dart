@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/api_expired_token_exception.dart';
 import 'package:flutter_presensi_mhs/data/model/auth/auth.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
@@ -83,7 +84,18 @@ class PresensiAppApi {
     );
 
     if (response.statusCode != 200) {
-      throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      if (response.statusCode == 401) {
+        String? decoded = jsonDecode(response.body)['message'];
+        if (decoded == null) {
+          throw ApiAccessErrorException('Message param doesnt exist');
+        }
+
+        if (decoded.contains('Expired token')) {
+          throw ApiExpiredTokenException('Token is expired');
+        }
+      } else {
+        throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      }
     }
 
     return PerkuliahanList.fromJson(response.body);

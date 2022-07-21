@@ -1,5 +1,8 @@
 import 'package:flutter_presensi_mhs/data/api/presensi_app_backend_api.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/login_null_result_exception.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/provider_error_exception.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/repository_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/model/local/auth.dart' as local;
 import 'package:flutter_presensi_mhs/data/model/auth/auth.dart' as api;
 import 'package:flutter_presensi_mhs/data/provider/auth_provider.dart';
@@ -36,10 +39,20 @@ class AuthRepository {
     return logoutResult;
   }
 
-  Future<String?> renewToken(String refreshToken) async {
-    final accessToken =
-        await _presensiAppApi.renewAccessToken(refreshToken: refreshToken);
-    var auth = await (_provider as AuthProvider).getAuth();
+  Future<String> renewToken(local.Auth auth) async {
+    String? refreshToken = auth.refreshToken;
+    if (refreshToken == null) {
+      throw RepositoryErrorException('Refresh token is null');
+    }
+
+    String? accessToken = await _presensiAppApi.renewAccessToken(
+      refreshToken: refreshToken,
+    );
+
+    if (accessToken == null) {
+      throw ApiAccessErrorException('Access token null');
+    }
+
     auth.rebuild((b) => b..accessToken = accessToken);
     await (_provider as AuthProvider).updateToken(auth);
 

@@ -8,20 +8,9 @@ part 'splash_state.g.dart';
 abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
   bool get isLoading;
   String get error;
-  local_auth.Auth get auth;
-  bool get isFirstTime;
-  bool get isCreatingDB;
-  bool get isReadyToNavigate;
-  bool get isDBCreated;
-  String get statusMessage;
-
-  bool get isLoggedIn =>
-      isLoading &&
-      auth.id! != 0 &&
-      auth.accessToken!.isNotEmpty &&
-      auth.refreshToken!.isNotEmpty &&
-      auth.createdAt! != 0 &&
-      error.isEmpty;
+  bool? get isFirstTime;
+  bool? get isDBInitiated;
+  String get stateMessage;
 
   bool get isError => error.isEmpty;
 
@@ -33,113 +22,38 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
     return SplashState((b) => b
       ..isLoading = false
       ..error = ''
-      ..isFirstTime = false
-      ..isCreatingDB = false
-      ..isDBCreated = false
-      ..isReadyToNavigate = false
-      ..statusMessage = ''
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
+      ..stateMessage = '');
   }
 
-  factory SplashState.loading() {
+  factory SplashState.loading(String message) {
     return SplashState((b) => b
       ..isLoading = true
       ..error = ''
-      ..isFirstTime = false
-      ..isCreatingDB = false
-      ..isDBCreated = false
-      ..isReadyToNavigate = false
-      ..statusMessage = 'Preparing...'
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
+      ..stateMessage = message);
   }
 
   factory SplashState.loggedIn(local_auth.Auth authLocal) {
     return SplashState((b) => b
       ..isLoading = true
       ..error = ''
-      ..statusMessage = 'Auth Found'
-      ..isFirstTime = false
-      ..isCreatingDB = false
-      ..isDBCreated = false
-      ..isReadyToNavigate = true
-      ..auth.replace(authLocal));
+      ..stateMessage = 'Auth Found');
   }
 
-  factory SplashState.error(String errorMsg) {
+  factory SplashState.fail(String errorMsg, {bool? isFirstTime}) {
     return SplashState((b) => b
       ..isLoading = false
       ..error = errorMsg
-      ..isFirstTime = false
-      ..statusMessage = ''
-      ..isCreatingDB = false
-      ..isDBCreated = false
-      ..isReadyToNavigate = false
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
+      ..isFirstTime = isFirstTime
+      ..stateMessage = '');
   }
 
-  factory SplashState.firstTime(bool ftVal) {
-    String statusMsg = '';
-    if (ftVal) {
-      statusMsg = 'This is your first time';
-    } else {
-      statusMsg = 'Not your first time';
-    }
+  factory SplashState.success(String message,
+      {bool? dbInitiated, bool? isFirstTime}) {
     return SplashState((b) => b
       ..isLoading = true
       ..error = ''
-      ..isFirstTime = ftVal
-      ..statusMessage = statusMsg
-      ..isCreatingDB = false
-      ..isDBCreated = false
-      ..isReadyToNavigate = true
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
-  }
-
-  factory SplashState.dbCreating() {
-    return SplashState((b) => b
-      ..isLoading = true
-      ..error = ''
-      ..isFirstTime = false
-      ..isCreatingDB = true
-      ..isDBCreated = false
-      ..isReadyToNavigate = false
-      ..statusMessage = 'Initializing DB...'
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
-  }
-
-  factory SplashState.dbCreated() {
-    return SplashState((b) => b
-      ..isLoading = true
-      ..error = ''
-      ..isFirstTime = false
-      ..isCreatingDB = false
-      ..isDBCreated = true
-      ..isReadyToNavigate = false
-      ..statusMessage = 'DB Created...'
-      ..auth.replace(local_auth.Auth((b) => b
-        ..id = 0
-        ..accessToken = ''
-        ..refreshToken = ''
-        ..createdAt = 0)));
+      ..isFirstTime = isFirstTime
+      ..isDBInitiated = dbInitiated
+      ..stateMessage = message);
   }
 }

@@ -9,7 +9,7 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   WelcomeBloc(this._appRepository) : super(WelcomeState.initial()) {
     on<CreateFirstTime>((event, emit) async {
       try {
-        await _appRepository.createFirstTime();
+        await _appRepository.flagFirstTime();
         emit(WelcomeState.success());
       } on Exception catch (_) {
         emit(WelcomeState.error('Something went wrong'));

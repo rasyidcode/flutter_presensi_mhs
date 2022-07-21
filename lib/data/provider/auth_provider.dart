@@ -23,11 +23,11 @@ class AuthProvider extends BaseProvider {
         ?.rawQuery('SELECT * FROM auth ORDER BY id DESC LIMIT 1');
 
     if (auth == null) {
-      throw NoAuthFoundException();
+      throw NoAuthFoundException('Auth not found');
     }
 
     if (auth.isEmpty) {
-      throw NoAuthFoundException();
+      throw NoAuthFoundException('Auth is empty');
     }
 
     final auths = auth

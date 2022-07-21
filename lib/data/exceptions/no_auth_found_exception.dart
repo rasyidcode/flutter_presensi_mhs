@@ -1,3 +1,4 @@
 class NoAuthFoundException implements Exception {
-  NoAuthFoundException();
+  final String message;
+  NoAuthFoundException(this.message);
 }

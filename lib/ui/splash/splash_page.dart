@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _splashBloc.add(InitDB());
+    _splashBloc.initDB();
   }
 
   @override
@@ -35,64 +35,59 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => _splashBloc,
-      child: Scaffold(
-        body: BlocListener<SplashBloc, SplashState>(
-            listener: (context, state) {
-              // has logged in
-              if (state.isDBCreated) {
-                _splashBloc.add(GetAuth());
-              }
+    return Scaffold(
+      body: BlocListener<SplashBloc, SplashState>(
+          listener: (context, state) {
+            // has logged in
+            bool? isDBInitiated = state.isDBInitiated;
+            if (isDBInitiated != null && isDBInitiated) {
+              Timer(const Duration(seconds: 1), () {
+                _splashBloc.checkFirstTime();
+              });
+            }
 
-              if (state.isReadyToNavigate) {
-                Future.delayed(const Duration(seconds: 2), () {
-                  if (state.isLoggedIn) {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const HomePage()));
-                  } else if (state.isFirstTime) {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const WelcomePage()));
-                  } else if (!state.isFirstTime) {
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const LoginPage()));
-                  }
-                });
+            bool? isFirstTime = state.isFirstTime;
+            if (isFirstTime != null) {
+              if (isFirstTime) {
+                // TODO: go to welcome page
+                print('first time');
+              } else {
+                // TODO: go to login page
+                print('not first time');
               }
-            },
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/logo_mhs.png',
-                  ),
-                  BlocBuilder<SplashBloc, SplashState>(
-                      builder: (context, state) {
-                    return Column(
-                      children: [
-                        const SizedBox(height: 20.0),
-                        (state.isLoading || state.isCreatingDB)
-                            ? const CircularProgressIndicator(
-                                color: kPrimaryButtonColor)
-                            : Container(),
-                        const SizedBox(height: 20.0),
-                        Text(
-                          state.statusMessage,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              ?.copyWith(color: Colors.white),
-                        )
-                      ],
-                    );
-                  })
-                ],
-              ),
-            )),
-      ),
+            }
+          },
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/logo_mhs.png',
+                ),
+                BlocBuilder<SplashBloc, SplashState>(builder: (context, state) {
+                  return Column(
+                    children: [
+                      const SizedBox(height: 20.0),
+                      state.isLoading
+                          ? const CircularProgressIndicator(
+                              color: kPrimaryButtonColor)
+                          : Container(),
+                      const SizedBox(height: 20.0),
+                      Text(
+                        state.stateMessage,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            ?.copyWith(color: Colors.white),
+                      )
+                    ],
+                  );
+                })
+              ],
+            ),
+          )),
     );
   }
 }

@@ -29,6 +29,10 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
+    // TODO: check auth if exist
+    // TODO: if auth exist, push user to home page
+    // TODO: otherwise user must login
+
     _nimFocusNode.addListener(_onNimFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
   }

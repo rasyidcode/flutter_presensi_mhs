@@ -4,6 +4,8 @@ import 'package:flutter_presensi_mhs/data/provider/app_provider.dart';
 import 'package:flutter_presensi_mhs/data/provider/auth_provider.dart';
 import 'package:flutter_presensi_mhs/data/repository/app_repository.dart';
 import 'package:flutter_presensi_mhs/data/repository/auth_repository.dart';
+import 'package:flutter_presensi_mhs/data/repository/perkuliahan_repository.dart';
+import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/splash/splash_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/welcome/welcome_bloc.dart';
@@ -24,9 +26,11 @@ void initKiwi() {
         (container) => AppRepository(container.resolve<AppProvider>()))
     ..registerFactory((container) =>
         AuthRepository(container.resolve(), container.resolve<AuthProvider>()))
+    ..registerFactory((container) => PerkuliahanRepository(container.resolve()))
     // bloc
-    ..registerFactory(
-        (container) => SplashBloc(container.resolve(), container.resolve()))
+    ..registerFactory((container) => SplashBloc(container.resolve()))
     ..registerFactory((container) => WelcomeBloc(container.resolve()))
-    ..registerFactory((container) => LoginBloc(container.resolve()));
+    ..registerFactory((container) => LoginBloc(container.resolve()))
+    ..registerFactory(
+        (container) => HomeBloc(container.resolve(), container.resolve()));
 }

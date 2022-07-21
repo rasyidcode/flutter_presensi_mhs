@@ -12,17 +12,11 @@ class _$SplashState extends SplashState {
   @override
   final String error;
   @override
-  final local_auth.Auth auth;
+  final bool? isFirstTime;
   @override
-  final bool isFirstTime;
+  final bool? isDBInitiated;
   @override
-  final bool isCreatingDB;
-  @override
-  final bool isReadyToNavigate;
-  @override
-  final bool isDBCreated;
-  @override
-  final String statusMessage;
+  final String stateMessage;
 
   factory _$SplashState([void Function(SplashStateBuilder)? updates]) =>
       (new SplashStateBuilder()..update(updates)).build();
@@ -30,27 +24,15 @@ class _$SplashState extends SplashState {
   _$SplashState._(
       {required this.isLoading,
       required this.error,
-      required this.auth,
-      required this.isFirstTime,
-      required this.isCreatingDB,
-      required this.isReadyToNavigate,
-      required this.isDBCreated,
-      required this.statusMessage})
+      this.isFirstTime,
+      this.isDBInitiated,
+      required this.stateMessage})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         isLoading, 'SplashState', 'isLoading');
     BuiltValueNullFieldError.checkNotNull(error, 'SplashState', 'error');
-    BuiltValueNullFieldError.checkNotNull(auth, 'SplashState', 'auth');
     BuiltValueNullFieldError.checkNotNull(
-        isFirstTime, 'SplashState', 'isFirstTime');
-    BuiltValueNullFieldError.checkNotNull(
-        isCreatingDB, 'SplashState', 'isCreatingDB');
-    BuiltValueNullFieldError.checkNotNull(
-        isReadyToNavigate, 'SplashState', 'isReadyToNavigate');
-    BuiltValueNullFieldError.checkNotNull(
-        isDBCreated, 'SplashState', 'isDBCreated');
-    BuiltValueNullFieldError.checkNotNull(
-        statusMessage, 'SplashState', 'statusMessage');
+        stateMessage, 'SplashState', 'stateMessage');
   }
 
   @override
@@ -66,28 +48,19 @@ class _$SplashState extends SplashState {
     return other is SplashState &&
         isLoading == other.isLoading &&
         error == other.error &&
-        auth == other.auth &&
         isFirstTime == other.isFirstTime &&
-        isCreatingDB == other.isCreatingDB &&
-        isReadyToNavigate == other.isReadyToNavigate &&
-        isDBCreated == other.isDBCreated &&
-        statusMessage == other.statusMessage;
+        isDBInitiated == other.isDBInitiated &&
+        stateMessage == other.stateMessage;
   }
 
   @override
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc(
-                $jc(
-                    $jc(
-                        $jc($jc($jc(0, isLoading.hashCode), error.hashCode),
-                            auth.hashCode),
-                        isFirstTime.hashCode),
-                    isCreatingDB.hashCode),
-                isReadyToNavigate.hashCode),
-            isDBCreated.hashCode),
-        statusMessage.hashCode));
+            $jc($jc($jc(0, isLoading.hashCode), error.hashCode),
+                isFirstTime.hashCode),
+            isDBInitiated.hashCode),
+        stateMessage.hashCode));
   }
 
   @override
@@ -95,12 +68,9 @@ class _$SplashState extends SplashState {
     return (newBuiltValueToStringHelper('SplashState')
           ..add('isLoading', isLoading)
           ..add('error', error)
-          ..add('auth', auth)
           ..add('isFirstTime', isFirstTime)
-          ..add('isCreatingDB', isCreatingDB)
-          ..add('isReadyToNavigate', isReadyToNavigate)
-          ..add('isDBCreated', isDBCreated)
-          ..add('statusMessage', statusMessage))
+          ..add('isDBInitiated', isDBInitiated)
+          ..add('stateMessage', stateMessage))
         .toString();
   }
 }
@@ -116,32 +86,18 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
   String? get error => _$this._error;
   set error(String? error) => _$this._error = error;
 
-  local_auth.AuthBuilder? _auth;
-  local_auth.AuthBuilder get auth =>
-      _$this._auth ??= new local_auth.AuthBuilder();
-  set auth(local_auth.AuthBuilder? auth) => _$this._auth = auth;
-
   bool? _isFirstTime;
   bool? get isFirstTime => _$this._isFirstTime;
   set isFirstTime(bool? isFirstTime) => _$this._isFirstTime = isFirstTime;
 
-  bool? _isCreatingDB;
-  bool? get isCreatingDB => _$this._isCreatingDB;
-  set isCreatingDB(bool? isCreatingDB) => _$this._isCreatingDB = isCreatingDB;
+  bool? _isDBInitiated;
+  bool? get isDBInitiated => _$this._isDBInitiated;
+  set isDBInitiated(bool? isDBInitiated) =>
+      _$this._isDBInitiated = isDBInitiated;
 
-  bool? _isReadyToNavigate;
-  bool? get isReadyToNavigate => _$this._isReadyToNavigate;
-  set isReadyToNavigate(bool? isReadyToNavigate) =>
-      _$this._isReadyToNavigate = isReadyToNavigate;
-
-  bool? _isDBCreated;
-  bool? get isDBCreated => _$this._isDBCreated;
-  set isDBCreated(bool? isDBCreated) => _$this._isDBCreated = isDBCreated;
-
-  String? _statusMessage;
-  String? get statusMessage => _$this._statusMessage;
-  set statusMessage(String? statusMessage) =>
-      _$this._statusMessage = statusMessage;
+  String? _stateMessage;
+  String? get stateMessage => _$this._stateMessage;
+  set stateMessage(String? stateMessage) => _$this._stateMessage = stateMessage;
 
   SplashStateBuilder();
 
@@ -150,12 +106,9 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
     if ($v != null) {
       _isLoading = $v.isLoading;
       _error = $v.error;
-      _auth = $v.auth.toBuilder();
       _isFirstTime = $v.isFirstTime;
-      _isCreatingDB = $v.isCreatingDB;
-      _isReadyToNavigate = $v.isReadyToNavigate;
-      _isDBCreated = $v.isDBCreated;
-      _statusMessage = $v.statusMessage;
+      _isDBInitiated = $v.isDBInitiated;
+      _stateMessage = $v.stateMessage;
       _$v = null;
     }
     return this;
@@ -174,36 +127,16 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
 
   @override
   _$SplashState build() {
-    _$SplashState _$result;
-    try {
-      _$result = _$v ??
-          new _$SplashState._(
-              isLoading: BuiltValueNullFieldError.checkNotNull(
-                  isLoading, 'SplashState', 'isLoading'),
-              error: BuiltValueNullFieldError.checkNotNull(
-                  error, 'SplashState', 'error'),
-              auth: auth.build(),
-              isFirstTime: BuiltValueNullFieldError.checkNotNull(
-                  isFirstTime, 'SplashState', 'isFirstTime'),
-              isCreatingDB: BuiltValueNullFieldError.checkNotNull(
-                  isCreatingDB, 'SplashState', 'isCreatingDB'),
-              isReadyToNavigate: BuiltValueNullFieldError.checkNotNull(
-                  isReadyToNavigate, 'SplashState', 'isReadyToNavigate'),
-              isDBCreated: BuiltValueNullFieldError.checkNotNull(
-                  isDBCreated, 'SplashState', 'isDBCreated'),
-              statusMessage: BuiltValueNullFieldError.checkNotNull(
-                  statusMessage, 'SplashState', 'statusMessage'));
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'auth';
-        auth.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            'SplashState', _$failedField, e.toString());
-      }
-      rethrow;
-    }
+    final _$result = _$v ??
+        new _$SplashState._(
+            isLoading: BuiltValueNullFieldError.checkNotNull(
+                isLoading, 'SplashState', 'isLoading'),
+            error: BuiltValueNullFieldError.checkNotNull(
+                error, 'SplashState', 'error'),
+            isFirstTime: isFirstTime,
+            isDBInitiated: isDBInitiated,
+            stateMessage: BuiltValueNullFieldError.checkNotNull(
+                stateMessage, 'SplashState', 'stateMessage'));
     replace(_$result);
     return _$result;
   }

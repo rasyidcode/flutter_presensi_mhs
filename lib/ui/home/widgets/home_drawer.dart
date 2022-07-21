@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
-import 'package:flutter_presensi_mhs/ui/jadwal/jadwal_page.dart';
-import 'package:flutter_presensi_mhs/ui/profile/profile_page.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({Key? key}) : super(key: key);
@@ -69,48 +67,6 @@ class HomeDrawer extends StatelessWidget {
                   leading: Icon(Icons.home, color: Colors.white),
                   title: Text(
                     'Home',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  if (kDebugMode) {
-                    print('Jadwal Matkul');
-                  }
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => const JadwalPage()));
-                },
-                child: const ListTile(
-                  leading: Icon(Icons.calendar_today, color: Colors.white),
-                  title: Text(
-                    'Jadwal Matkul',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  if (kDebugMode) {
-                    print('Profile');
-                  }
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => const ProfilePage()));
-                },
-                child: const ListTile(
-                  leading: Icon(Icons.person, color: Colors.white),
-                  title: Text(
-                    'Profile',
                     style: TextStyle(
                       color: Colors.white,
                     ),

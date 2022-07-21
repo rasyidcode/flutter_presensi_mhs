@@ -10,13 +10,11 @@ class AppRepository {
     await (_provider as AppProvider).initDatabase();
   }
 
-  Future<int> getFirstTime() async {
-    final firstTime = await (_provider as AppProvider).getFirstTime();
-
-    return firstTime;
+  Future<bool> checkFirstTime() async {
+    return await (_provider as AppProvider).checkFirstTime();
   }
 
-  Future<void> createFirstTime() async {
+  Future<void> flagFirstTime() async {
     await (_provider as AppProvider).flagFirstTime();
   }
 }
