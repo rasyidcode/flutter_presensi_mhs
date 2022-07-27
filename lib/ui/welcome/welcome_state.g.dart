@@ -10,15 +10,13 @@ class _$WelcomeState extends WelcomeState {
   @override
   final String error;
   @override
-  final bool isSuccess;
+  final bool? isSuccess;
 
   factory _$WelcomeState([void Function(WelcomeStateBuilder)? updates]) =>
       (new WelcomeStateBuilder()..update(updates)).build();
 
-  _$WelcomeState._({required this.error, required this.isSuccess}) : super._() {
+  _$WelcomeState._({required this.error, this.isSuccess}) : super._() {
     BuiltValueNullFieldError.checkNotNull(error, 'WelcomeState', 'error');
-    BuiltValueNullFieldError.checkNotNull(
-        isSuccess, 'WelcomeState', 'isSuccess');
   }
 
   @override
@@ -91,8 +89,7 @@ class WelcomeStateBuilder
         new _$WelcomeState._(
             error: BuiltValueNullFieldError.checkNotNull(
                 error, 'WelcomeState', 'error'),
-            isSuccess: BuiltValueNullFieldError.checkNotNull(
-                isSuccess, 'WelcomeState', 'isSuccess'));
+            isSuccess: isSuccess);
     replace(_$result);
     return _$result;
   }

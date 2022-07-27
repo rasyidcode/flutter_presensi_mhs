@@ -8,8 +8,11 @@ import 'package:flutter_presensi_mhs/ui/login/login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
 
-  String username = '';
-  String password = '';
+  void doLogin(String username, String password) {
+    add(DoLogin((b) => b
+      ..username = username
+      ..password = password));
+  }
 
   LoginBloc(this._authRepository) : super(LoginState.initial()) {
     on<DoLogin>((event, emit) async {
@@ -18,7 +21,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       await Future.delayed(const Duration(seconds: 3), () => {});
 
       try {
-        var loginResult = await _authRepository.login(username, password);
+        var loginResult =
+            await _authRepository.login(event.username, event.password);
         emit(LoginState.success(loginResult));
       } on ApiAccessErrorException catch (e) {
         emit(LoginState.error(e.message));

@@ -6,9 +6,9 @@ class AppRepository {
 
   AppRepository(this._provider);
 
-  Future initAppProvider() async {
-    await (_provider as AppProvider).initDatabase();
-  }
+  // Future initAppProvider() async {
+  //   await (_provider as AppProvider).initDatabase();
+  // }
 
   Future<bool> checkFirstTime() async {
     return await (_provider as AppProvider).checkFirstTime();

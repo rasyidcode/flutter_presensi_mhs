@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({Key? key}) : super(key: key);
+  final DrawerData data;
+
+  const HomeDrawer({Key? key, required this.data}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +34,18 @@ class HomeDrawer extends StatelessWidget {
                     const SizedBox(width: 16.0),
                     Expanded(
                       child: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Ahmad Jamil Al Rasyid\n',
-                              style: TextStyle(
+                              text: '${data.name}\n',
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
-                              text: '1212121212',
-                              style: TextStyle(
+                              text: data.id,
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.w300,
                               ),

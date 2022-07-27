@@ -9,15 +9,13 @@ abstract class WelcomeState
   WelcomeState._();
 
   String get error;
-  bool get isSuccess;
+  bool? get isSuccess;
 
   factory WelcomeState([Function(WelcomeStateBuilder b) updates]) =
       _$WelcomeState;
 
   factory WelcomeState.initial() {
-    return WelcomeState((b) => b
-      ..error = ''
-      ..isSuccess = false);
+    return WelcomeState((b) => b..error = '');
   }
 
   factory WelcomeState.success() {

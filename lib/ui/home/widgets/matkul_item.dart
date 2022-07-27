@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
 import 'package:flutter_presensi_mhs/ui/detail/detail_page.dart';
 import 'package:flutter_presensi_mhs/ui/scan/scan_page.dart';
 
 class MatkulItem extends StatefulWidget {
-  const MatkulItem({Key? key}) : super(key: key);
+  final PerkuliahanItem? perkuliahanItem;
+  const MatkulItem({Key? key, required this.perkuliahanItem}) : super(key: key);
 
   @override
   State<MatkulItem> createState() => _MatkulItemState();

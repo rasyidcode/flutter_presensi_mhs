@@ -6,6 +6,10 @@ import 'package:flutter_presensi_mhs/ui/welcome/welcome_state.dart';
 class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   final AppRepository _appRepository;
 
+  void flagFirstime() {
+    add(CreateFirstTime());
+  }
+
   WelcomeBloc(this._appRepository) : super(WelcomeState.initial()) {
     on<CreateFirstTime>((event, emit) async {
       try {

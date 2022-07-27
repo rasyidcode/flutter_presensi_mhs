@@ -61,25 +61,23 @@ class PresensiAppApi {
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {
-        'RefreshToken': refreshToken,
+        'Refresh-Token': refreshToken,
       },
     );
 
     if (response.statusCode != 200) {
       throw ApiAccessErrorException(jsonDecode(response.body)['message']);
     }
-
     return jsonDecode(response.body)['access_token'];
   }
 
   // list matakuliah hari ini
   Future<PerkuliahanList?> getPerkuliahanList(
       {required String accessToken}) async {
-    final urlEncoded = Uri.encodeFull(baseApiURL + '/perkuliahan');
     final response = await _client.get(
-      Uri.parse(urlEncoded),
+      Uri.parse(baseApiURL + '/perkuliahan'),
       headers: {
-        HttpHeaders.authorizationHeader: accessToken,
+        HttpHeaders.authorizationHeader: 'Bearer $accessToken',
       },
     );
 

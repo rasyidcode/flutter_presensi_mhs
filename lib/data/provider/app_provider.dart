@@ -8,9 +8,9 @@ class AppProvider extends BaseProvider {
 
   AppProvider(this._presensiAppDb);
 
-  Future initDatabase() async {
-    await _presensiAppDb.initDB();
-  }
+  // Future initDatabase() async {
+  //   await _presensiAppDb.initDB();
+  // }
 
   Future<bool> checkFirstTime() async {
     final data = await _presensiAppDb.db
@@ -30,7 +30,7 @@ class AppProvider extends BaseProvider {
     }
 
     int total = totalData as int;
-    return total > 0;
+    return total <= 0;
   }
 
   Future<void> flagFirstTime() async {

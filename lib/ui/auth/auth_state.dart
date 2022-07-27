@@ -9,6 +9,19 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
   Auth get auth;
   bool get isLoading;
   String get error;
+  bool get isReadyToNavigate;
+  String? get stateMessage;
+
+  bool get isHasAuth => isAuthNotNull && !isLoading && error == '';
+
+  bool get isAuthNotNull =>
+      auth.id != 0 &&
+      auth.accessToken != '' &&
+      auth.refreshToken != '' &&
+      auth.createdAt != 0;
+
+  bool? get isDoneGetAuth;
+  bool? get isDoneRenewToken;
 
   AuthState._();
 
@@ -19,6 +32,7 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
       (b) => b
         ..isLoading = false
         ..error = ''
+        ..isReadyToNavigate = false
         ..auth.replace(
           Auth((b) => b
             ..accessToken = ''
@@ -29,11 +43,13 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
     );
   }
 
-  factory AuthState.loading() {
+  factory AuthState.loading({String? stateMsg}) {
     return AuthState(
       (b) => b
         ..isLoading = true
         ..error = ''
+        ..isReadyToNavigate = false
+        ..stateMessage = stateMsg
         ..auth.replace(
           Auth((b) => b
             ..accessToken = ''
@@ -44,20 +60,27 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
     );
   }
 
-  factory AuthState.success(Auth auth) {
+  factory AuthState.success(Auth auth,
+      {String? stateMsg, bool? isDoneGetAuth, bool? isDoneRenewToken}) {
     return AuthState(
       (b) => b
         ..isLoading = false
         ..error = ''
+        ..stateMessage = stateMsg
+        ..isDoneGetAuth = isDoneGetAuth
+        ..isDoneRenewToken = isDoneRenewToken
+        ..isReadyToNavigate = true
         ..auth.replace(auth),
     );
   }
 
-  factory AuthState.fail(String error) {
+  factory AuthState.fail(String error, {String? stateMsg}) {
     return AuthState(
       (b) => b
         ..isLoading = false
         ..error = error
+        ..isReadyToNavigate = true
+        ..stateMessage = stateMsg
         ..auth.replace(Auth((b) => b
           ..accessToken = ''
           ..refreshToken = ''

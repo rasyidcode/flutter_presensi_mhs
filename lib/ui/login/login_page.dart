@@ -29,10 +29,6 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    // TODO: check auth if exist
-    // TODO: if auth exist, push user to home page
-    // TODO: otherwise user must login
-
     _nimFocusNode.addListener(_onNimFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
   }
@@ -193,10 +189,10 @@ class _LoginPageState extends State<LoginPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50.0)),
                               onPressed: () {
-                                _loginBloc.username = _nimTextController.text;
-                                _loginBloc.password = _passTextController.text;
+                                String username = _nimTextController.text;
+                                String password = _passTextController.text;
 
-                                _loginBloc.add(DoLogin());
+                                _loginBloc.doLogin(username, password);
                               },
                               child: const Text(
                                 'Login',

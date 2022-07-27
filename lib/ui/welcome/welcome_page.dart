@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:flutter_presensi_mhs/ui/welcome/welcome_bloc.dart';
-import 'package:flutter_presensi_mhs/ui/welcome/welcome_event.dart';
+import 'package:flutter_presensi_mhs/ui/welcome/welcome_state.dart';
 import 'package:kiwi/kiwi.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -29,59 +29,74 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            Image.asset(
-              'assets/logo_mhs.png',
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Aplikasi Presensi Mahasiswa',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline4?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+    return BlocProvider(
+      create: (_) => _welcomeBloc,
+      child: BlocListener<WelcomeBloc, WelcomeState>(
+        listener: (context, state) {
+          bool? isSuccess = state.isSuccess;
+          if (isSuccess != null) {
+            if (isSuccess) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginPage()));
+            } else {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+            }
+          }
+        },
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Image.asset(
+                  'assets/logo_mhs.png',
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  'Aplikasi Presensi Mahasiswa',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline4?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  'Selamat Datang Di Aplikasi Presensi Mahasiswa QRCode STMIK ADHI GUNA PALU',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
+                const Spacer(),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: kPrimaryButtonColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 120.0,
+                      vertical: 4.0,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Selamat Datang Di Aplikasi Presensi Mahasiswa QRCode STMIK ADHI GUNA PALU',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                    color: Colors.white,
+                  onPressed: () {
+                    _welcomeBloc.flagFirstime();
+                  },
+                  child: const Text(
+                    'Mulai',
+                    style: TextStyle(
+                      color: Colors.black87,
+                    ),
                   ),
+                ),
+                const SizedBox(height: 8.0),
+              ],
             ),
-            const Spacer(),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: kPrimaryButtonColor,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 120.0,
-                  vertical: 4.0,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-              onPressed: () {
-                _welcomeBloc.add(CreateFirstTime());
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage()));
-              },
-              child: const Text(
-                'Mulai',
-                style: TextStyle(
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8.0),
-          ],
+          ),
         ),
       ),
     );

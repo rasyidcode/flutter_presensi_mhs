@@ -10,8 +10,9 @@ class AuthProvider extends BaseProvider {
   AuthProvider(this._presensiAppDb);
 
   Future<void> updateToken(Auth authdata) async {
-    await _presensiAppDb.db?.update('auth', authdata.toMap(),
+    int? count = await _presensiAppDb.db?.update('auth', authdata.toMap(),
         where: 'id = ?', whereArgs: [authdata.id]);
+    print('count updated: $count');
   }
 
   Future<void> saveAuth(Auth authdata) async {
@@ -21,13 +22,12 @@ class AuthProvider extends BaseProvider {
   Future<Auth> getAuth() async {
     final auth = await _presensiAppDb.db
         ?.rawQuery('SELECT * FROM auth ORDER BY id DESC LIMIT 1');
-
     if (auth == null) {
-      throw NoAuthFoundException('Auth not found');
+      throw NoAuthFoundException('Auth not found', 'null');
     }
 
     if (auth.isEmpty) {
-      throw NoAuthFoundException('Auth is empty');
+      throw NoAuthFoundException('Auth is empty', 'empty');
     }
 
     final auths = auth

@@ -1,6 +1,7 @@
 library auth_event;
 
 import 'package:built_value/built_value.dart';
+import 'package:flutter_presensi_mhs/data/model/local/auth.dart';
 
 part 'auth_event.g.dart';
 
@@ -10,7 +11,7 @@ class GetAuth extends AuthEvent {}
 
 abstract class RenewToken extends AuthEvent
     implements Built<RenewToken, RenewTokenBuilder> {
-  String get refreshToken;
+  Auth get auth;
 
   RenewToken._();
 

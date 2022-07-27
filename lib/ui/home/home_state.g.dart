@@ -12,13 +12,11 @@ class _$HomeState extends HomeState {
   @override
   final bool isLoading;
   @override
-  final PerkuliahanList data;
+  final BuiltList<PerkuliahanItem?> matkulData;
   @override
-  final bool isGetAuthFinished;
+  final int? matkulTotal;
   @override
-  final bool? isExpiredToken;
-  @override
-  final bool isTokenRenewed;
+  final bool? isTokenExpired;
 
   factory _$HomeState([void Function(HomeStateBuilder)? updates]) =>
       (new HomeStateBuilder()..update(updates)).build();
@@ -26,18 +24,14 @@ class _$HomeState extends HomeState {
   _$HomeState._(
       {required this.error,
       required this.isLoading,
-      required this.data,
-      required this.isGetAuthFinished,
-      this.isExpiredToken,
-      required this.isTokenRenewed})
+      required this.matkulData,
+      this.matkulTotal,
+      this.isTokenExpired})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(error, 'HomeState', 'error');
     BuiltValueNullFieldError.checkNotNull(isLoading, 'HomeState', 'isLoading');
-    BuiltValueNullFieldError.checkNotNull(data, 'HomeState', 'data');
     BuiltValueNullFieldError.checkNotNull(
-        isGetAuthFinished, 'HomeState', 'isGetAuthFinished');
-    BuiltValueNullFieldError.checkNotNull(
-        isTokenRenewed, 'HomeState', 'isTokenRenewed');
+        matkulData, 'HomeState', 'matkulData');
   }
 
   @override
@@ -53,22 +47,19 @@ class _$HomeState extends HomeState {
     return other is HomeState &&
         error == other.error &&
         isLoading == other.isLoading &&
-        data == other.data &&
-        isGetAuthFinished == other.isGetAuthFinished &&
-        isExpiredToken == other.isExpiredToken &&
-        isTokenRenewed == other.isTokenRenewed;
+        matkulData == other.matkulData &&
+        matkulTotal == other.matkulTotal &&
+        isTokenExpired == other.isTokenExpired;
   }
 
   @override
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc(
-                $jc($jc($jc(0, error.hashCode), isLoading.hashCode),
-                    data.hashCode),
-                isGetAuthFinished.hashCode),
-            isExpiredToken.hashCode),
-        isTokenRenewed.hashCode));
+            $jc($jc($jc(0, error.hashCode), isLoading.hashCode),
+                matkulData.hashCode),
+            matkulTotal.hashCode),
+        isTokenExpired.hashCode));
   }
 
   @override
@@ -76,10 +67,9 @@ class _$HomeState extends HomeState {
     return (newBuiltValueToStringHelper('HomeState')
           ..add('error', error)
           ..add('isLoading', isLoading)
-          ..add('data', data)
-          ..add('isGetAuthFinished', isGetAuthFinished)
-          ..add('isExpiredToken', isExpiredToken)
-          ..add('isTokenRenewed', isTokenRenewed))
+          ..add('matkulData', matkulData)
+          ..add('matkulTotal', matkulTotal)
+          ..add('isTokenExpired', isTokenExpired))
         .toString();
   }
 }
@@ -95,25 +85,20 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   bool? get isLoading => _$this._isLoading;
   set isLoading(bool? isLoading) => _$this._isLoading = isLoading;
 
-  PerkuliahanListBuilder? _data;
-  PerkuliahanListBuilder get data =>
-      _$this._data ??= new PerkuliahanListBuilder();
-  set data(PerkuliahanListBuilder? data) => _$this._data = data;
+  ListBuilder<PerkuliahanItem?>? _matkulData;
+  ListBuilder<PerkuliahanItem?> get matkulData =>
+      _$this._matkulData ??= new ListBuilder<PerkuliahanItem?>();
+  set matkulData(ListBuilder<PerkuliahanItem?>? matkulData) =>
+      _$this._matkulData = matkulData;
 
-  bool? _isGetAuthFinished;
-  bool? get isGetAuthFinished => _$this._isGetAuthFinished;
-  set isGetAuthFinished(bool? isGetAuthFinished) =>
-      _$this._isGetAuthFinished = isGetAuthFinished;
+  int? _matkulTotal;
+  int? get matkulTotal => _$this._matkulTotal;
+  set matkulTotal(int? matkulTotal) => _$this._matkulTotal = matkulTotal;
 
-  bool? _isExpiredToken;
-  bool? get isExpiredToken => _$this._isExpiredToken;
-  set isExpiredToken(bool? isExpiredToken) =>
-      _$this._isExpiredToken = isExpiredToken;
-
-  bool? _isTokenRenewed;
-  bool? get isTokenRenewed => _$this._isTokenRenewed;
-  set isTokenRenewed(bool? isTokenRenewed) =>
-      _$this._isTokenRenewed = isTokenRenewed;
+  bool? _isTokenExpired;
+  bool? get isTokenExpired => _$this._isTokenExpired;
+  set isTokenExpired(bool? isTokenExpired) =>
+      _$this._isTokenExpired = isTokenExpired;
 
   HomeStateBuilder();
 
@@ -122,10 +107,9 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
     if ($v != null) {
       _error = $v.error;
       _isLoading = $v.isLoading;
-      _data = $v.data.toBuilder();
-      _isGetAuthFinished = $v.isGetAuthFinished;
-      _isExpiredToken = $v.isExpiredToken;
-      _isTokenRenewed = $v.isTokenRenewed;
+      _matkulData = $v.matkulData.toBuilder();
+      _matkulTotal = $v.matkulTotal;
+      _isTokenExpired = $v.isTokenExpired;
       _$v = null;
     }
     return this;
@@ -152,17 +136,14 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
                   error, 'HomeState', 'error'),
               isLoading: BuiltValueNullFieldError.checkNotNull(
                   isLoading, 'HomeState', 'isLoading'),
-              data: data.build(),
-              isGetAuthFinished: BuiltValueNullFieldError.checkNotNull(
-                  isGetAuthFinished, 'HomeState', 'isGetAuthFinished'),
-              isExpiredToken: isExpiredToken,
-              isTokenRenewed: BuiltValueNullFieldError.checkNotNull(
-                  isTokenRenewed, 'HomeState', 'isTokenRenewed'));
+              matkulData: matkulData.build(),
+              matkulTotal: matkulTotal,
+              isTokenExpired: isTokenExpired);
     } catch (_) {
       late String _$failedField;
       try {
-        _$failedField = 'data';
-        data.build();
+        _$failedField = 'matkulData';
+        matkulData.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             'HomeState', _$failedField, e.toString());

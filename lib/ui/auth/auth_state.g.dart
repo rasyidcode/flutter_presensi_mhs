@@ -13,16 +13,32 @@ class _$AuthState extends AuthState {
   final bool isLoading;
   @override
   final String error;
+  @override
+  final bool isReadyToNavigate;
+  @override
+  final String? stateMessage;
+  @override
+  final bool? isDoneGetAuth;
+  @override
+  final bool? isDoneRenewToken;
 
   factory _$AuthState([void Function(AuthStateBuilder)? updates]) =>
       (new AuthStateBuilder()..update(updates)).build();
 
   _$AuthState._(
-      {required this.auth, required this.isLoading, required this.error})
+      {required this.auth,
+      required this.isLoading,
+      required this.error,
+      required this.isReadyToNavigate,
+      this.stateMessage,
+      this.isDoneGetAuth,
+      this.isDoneRenewToken})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(auth, 'AuthState', 'auth');
     BuiltValueNullFieldError.checkNotNull(isLoading, 'AuthState', 'isLoading');
     BuiltValueNullFieldError.checkNotNull(error, 'AuthState', 'error');
+    BuiltValueNullFieldError.checkNotNull(
+        isReadyToNavigate, 'AuthState', 'isReadyToNavigate');
   }
 
   @override
@@ -38,13 +54,25 @@ class _$AuthState extends AuthState {
     return other is AuthState &&
         auth == other.auth &&
         isLoading == other.isLoading &&
-        error == other.error;
+        error == other.error &&
+        isReadyToNavigate == other.isReadyToNavigate &&
+        stateMessage == other.stateMessage &&
+        isDoneGetAuth == other.isDoneGetAuth &&
+        isDoneRenewToken == other.isDoneRenewToken;
   }
 
   @override
   int get hashCode {
-    return $jf(
-        $jc($jc($jc(0, auth.hashCode), isLoading.hashCode), error.hashCode));
+    return $jf($jc(
+        $jc(
+            $jc(
+                $jc(
+                    $jc($jc($jc(0, auth.hashCode), isLoading.hashCode),
+                        error.hashCode),
+                    isReadyToNavigate.hashCode),
+                stateMessage.hashCode),
+            isDoneGetAuth.hashCode),
+        isDoneRenewToken.hashCode));
   }
 
   @override
@@ -52,7 +80,11 @@ class _$AuthState extends AuthState {
     return (newBuiltValueToStringHelper('AuthState')
           ..add('auth', auth)
           ..add('isLoading', isLoading)
-          ..add('error', error))
+          ..add('error', error)
+          ..add('isReadyToNavigate', isReadyToNavigate)
+          ..add('stateMessage', stateMessage)
+          ..add('isDoneGetAuth', isDoneGetAuth)
+          ..add('isDoneRenewToken', isDoneRenewToken))
         .toString();
   }
 }
@@ -72,6 +104,25 @@ class AuthStateBuilder implements Builder<AuthState, AuthStateBuilder> {
   String? get error => _$this._error;
   set error(String? error) => _$this._error = error;
 
+  bool? _isReadyToNavigate;
+  bool? get isReadyToNavigate => _$this._isReadyToNavigate;
+  set isReadyToNavigate(bool? isReadyToNavigate) =>
+      _$this._isReadyToNavigate = isReadyToNavigate;
+
+  String? _stateMessage;
+  String? get stateMessage => _$this._stateMessage;
+  set stateMessage(String? stateMessage) => _$this._stateMessage = stateMessage;
+
+  bool? _isDoneGetAuth;
+  bool? get isDoneGetAuth => _$this._isDoneGetAuth;
+  set isDoneGetAuth(bool? isDoneGetAuth) =>
+      _$this._isDoneGetAuth = isDoneGetAuth;
+
+  bool? _isDoneRenewToken;
+  bool? get isDoneRenewToken => _$this._isDoneRenewToken;
+  set isDoneRenewToken(bool? isDoneRenewToken) =>
+      _$this._isDoneRenewToken = isDoneRenewToken;
+
   AuthStateBuilder();
 
   AuthStateBuilder get _$this {
@@ -80,6 +131,10 @@ class AuthStateBuilder implements Builder<AuthState, AuthStateBuilder> {
       _auth = $v.auth.toBuilder();
       _isLoading = $v.isLoading;
       _error = $v.error;
+      _isReadyToNavigate = $v.isReadyToNavigate;
+      _stateMessage = $v.stateMessage;
+      _isDoneGetAuth = $v.isDoneGetAuth;
+      _isDoneRenewToken = $v.isDoneRenewToken;
       _$v = null;
     }
     return this;
@@ -106,7 +161,12 @@ class AuthStateBuilder implements Builder<AuthState, AuthStateBuilder> {
               isLoading: BuiltValueNullFieldError.checkNotNull(
                   isLoading, 'AuthState', 'isLoading'),
               error: BuiltValueNullFieldError.checkNotNull(
-                  error, 'AuthState', 'error'));
+                  error, 'AuthState', 'error'),
+              isReadyToNavigate: BuiltValueNullFieldError.checkNotNull(
+                  isReadyToNavigate, 'AuthState', 'isReadyToNavigate'),
+              stateMessage: stateMessage,
+              isDoneGetAuth: isDoneGetAuth,
+              isDoneRenewToken: isDoneRenewToken);
     } catch (_) {
       late String _$failedField;
       try {

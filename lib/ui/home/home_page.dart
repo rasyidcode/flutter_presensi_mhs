@@ -1,12 +1,16 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
+import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_event.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/home_drawer.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/matkul_item.dart';
 import 'package:kiwi/kiwi.dart';
+import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,11 +20,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final AuthBloc _authBloc = KiwiContainer().resolve<AuthBloc>();
   final HomeBloc _homeBloc = KiwiContainer().resolve<HomeBloc>();
 
   @override
   void initState() {
-    _homeBloc.initGetAuth();
+    _authBloc.getAuth();
 
     super.initState();
   }
@@ -33,60 +38,97 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomeBloc, HomeState>(
-      listener: (context, state) {
-        if (state.isGetAuthFinished) {
-          // _homeBloc.setAuth(state.auth);
-          // _homeBloc.add(GetListMatkul());
-        }
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => _authBloc),
+        BlocProvider<HomeBloc>(create: (_) => _homeBloc)
+      ],
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, authstate) {
+          if (authstate.isHasAuth) {
+            bool? isDoneGetAuth = authstate.isDoneGetAuth;
+            if (isDoneGetAuth != null && isDoneGetAuth) {
+              String? accessToken = authstate.auth.accessToken;
+              if (accessToken != null) {
+                BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
+              }
+            }
 
-        bool? isExpiredToken = state.isExpiredToken;
-        if (isExpiredToken != null && isExpiredToken) {
-          _homeBloc.add(RenewToken());
-        }
-
-        if (state.isTokenRenewed) {
-          _homeBloc.add(GetListMatkul());
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: kPrimaryColor,
-          title: const Text(
-            'Home Page',
-            style: TextStyle(
-              fontSize: 16.0,
+            bool? isDoneRenewToken = authstate.isDoneRenewToken;
+            if (isDoneRenewToken != null && isDoneRenewToken) {
+              String? accessToken = authstate.auth.accessToken;
+              if (accessToken != null) {
+                BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
+              }
+            }
+          }
+        },
+        builder: (context, authstate) {
+          String? accessToken = authstate.auth.accessToken;
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: kPrimaryColor,
+              title: const Text(
+                'Home Page',
+                style: TextStyle(
+                  fontSize: 16.0,
+                ),
+              ),
             ),
-          ),
-        ),
-        backgroundColor: Colors.white,
-        drawer: const HomeDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Perkuliahan Hari Ini',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  Text(
-                    'Senin, 27 Okt 2022',
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  const Divider(),
-                  Column(
-                    children: const [
-                      MatkulItem(),
+            backgroundColor: Colors.white,
+            drawer: authstate.isHasAuth && accessToken != null
+                ? HomeDrawer(data: accessToken.jwtDecode())
+                : Container(),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: BlocConsumer<HomeBloc, HomeState>(
+                listener: (context, homestate) {
+                  bool? isTokenExpired = homestate.isTokenExpired;
+                  if (isTokenExpired != null && isTokenExpired) {
+                    if (authstate.isHasAuth) {
+                      BlocProvider.of<AuthBloc>(context)
+                          .renewToken(authstate.auth);
+                    }
+                  }
+                },
+                builder: (context, homestate) {
+                  if (homestate.isLoading || authstate.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (homestate.isError) {
+                    return Center(child: Text(homestate.error));
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Perkuliahan Hari Ini',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Text(
+                        BlocProvider.of<HomeBloc>(context).getCurrentDate(),
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      // const Divider(),
+                      // ListView.builder(
+                      //   itemCount: homestate.matkulTotal,
+                      //   itemBuilder: (context, index) {
+                      //     return MatkulItem(
+                      //       perkuliahanItem: homestate.matkulData[index],
+                      //     );
+                      //   },
+                      // )
                     ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }

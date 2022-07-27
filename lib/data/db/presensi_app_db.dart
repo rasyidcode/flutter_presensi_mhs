@@ -4,12 +4,12 @@ import 'package:path/path.dart';
 class PresensiAppDb {
   Database? db;
 
-  Future initDB() async {
-    final databasePath = await getDatabasesPath();
-    final String path = join(databasePath, 'fpm.db');
-    db = await openDatabase(path, version: 4,
-        onCreate: (Database db, int version) async {
-      await db.execute('''
+  PresensiAppDb() {
+    getDatabasesPath().then((dbPath) {
+      var path = join(dbPath, 'fpm.db');
+      openDatabase(path, version: 5,
+          onCreate: (Database dbs, int version) async {
+        await dbs.execute('''
         create table if not exists auth (
           id integer primary key autoincrement,
           accessToken text null,
@@ -17,13 +17,18 @@ class PresensiAppDb {
           createdAt integer
         )
       ''');
-      await db.execute('''
+        await dbs.execute('''
         create table if not exists firstTime (
           id integer primary key autoincrement,
           firstTime integer null,
           createdAt integer
         )
       ''');
+      }).then((database) {
+        db = database;
+      });
+    }).onError((error, stackTrace) {
+      db = null;
     });
   }
 

@@ -14,9 +14,9 @@ class _$SplashState extends SplashState {
   @override
   final bool? isFirstTime;
   @override
-  final bool? isDBInitiated;
-  @override
   final String stateMessage;
+  @override
+  final bool hideStateMessage;
 
   factory _$SplashState([void Function(SplashStateBuilder)? updates]) =>
       (new SplashStateBuilder()..update(updates)).build();
@@ -25,14 +25,16 @@ class _$SplashState extends SplashState {
       {required this.isLoading,
       required this.error,
       this.isFirstTime,
-      this.isDBInitiated,
-      required this.stateMessage})
+      required this.stateMessage,
+      required this.hideStateMessage})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         isLoading, 'SplashState', 'isLoading');
     BuiltValueNullFieldError.checkNotNull(error, 'SplashState', 'error');
     BuiltValueNullFieldError.checkNotNull(
         stateMessage, 'SplashState', 'stateMessage');
+    BuiltValueNullFieldError.checkNotNull(
+        hideStateMessage, 'SplashState', 'hideStateMessage');
   }
 
   @override
@@ -49,8 +51,8 @@ class _$SplashState extends SplashState {
         isLoading == other.isLoading &&
         error == other.error &&
         isFirstTime == other.isFirstTime &&
-        isDBInitiated == other.isDBInitiated &&
-        stateMessage == other.stateMessage;
+        stateMessage == other.stateMessage &&
+        hideStateMessage == other.hideStateMessage;
   }
 
   @override
@@ -59,8 +61,8 @@ class _$SplashState extends SplashState {
         $jc(
             $jc($jc($jc(0, isLoading.hashCode), error.hashCode),
                 isFirstTime.hashCode),
-            isDBInitiated.hashCode),
-        stateMessage.hashCode));
+            stateMessage.hashCode),
+        hideStateMessage.hashCode));
   }
 
   @override
@@ -69,8 +71,8 @@ class _$SplashState extends SplashState {
           ..add('isLoading', isLoading)
           ..add('error', error)
           ..add('isFirstTime', isFirstTime)
-          ..add('isDBInitiated', isDBInitiated)
-          ..add('stateMessage', stateMessage))
+          ..add('stateMessage', stateMessage)
+          ..add('hideStateMessage', hideStateMessage))
         .toString();
   }
 }
@@ -90,14 +92,14 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
   bool? get isFirstTime => _$this._isFirstTime;
   set isFirstTime(bool? isFirstTime) => _$this._isFirstTime = isFirstTime;
 
-  bool? _isDBInitiated;
-  bool? get isDBInitiated => _$this._isDBInitiated;
-  set isDBInitiated(bool? isDBInitiated) =>
-      _$this._isDBInitiated = isDBInitiated;
-
   String? _stateMessage;
   String? get stateMessage => _$this._stateMessage;
   set stateMessage(String? stateMessage) => _$this._stateMessage = stateMessage;
+
+  bool? _hideStateMessage;
+  bool? get hideStateMessage => _$this._hideStateMessage;
+  set hideStateMessage(bool? hideStateMessage) =>
+      _$this._hideStateMessage = hideStateMessage;
 
   SplashStateBuilder();
 
@@ -107,8 +109,8 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
       _isLoading = $v.isLoading;
       _error = $v.error;
       _isFirstTime = $v.isFirstTime;
-      _isDBInitiated = $v.isDBInitiated;
       _stateMessage = $v.stateMessage;
+      _hideStateMessage = $v.hideStateMessage;
       _$v = null;
     }
     return this;
@@ -134,9 +136,10 @@ class SplashStateBuilder implements Builder<SplashState, SplashStateBuilder> {
             error: BuiltValueNullFieldError.checkNotNull(
                 error, 'SplashState', 'error'),
             isFirstTime: isFirstTime,
-            isDBInitiated: isDBInitiated,
             stateMessage: BuiltValueNullFieldError.checkNotNull(
-                stateMessage, 'SplashState', 'stateMessage'));
+                stateMessage, 'SplashState', 'stateMessage'),
+            hideStateMessage: BuiltValueNullFieldError.checkNotNull(
+                hideStateMessage, 'SplashState', 'hideStateMessage'));
     replace(_$result);
     return _$result;
   }

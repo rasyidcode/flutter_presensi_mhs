@@ -2,19 +2,22 @@ library home_state;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
-import 'package:flutter_presensi_mhs/data/model/local/auth.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
-import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
 
 part 'home_state.g.dart';
 
 abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
   String get error;
   bool get isLoading;
-  PerkuliahanList get data;
-  bool get isGetAuthFinished;
-  bool? get isExpiredToken;
-  bool get isTokenRenewed;
+  BuiltList<PerkuliahanItem?> get matkulData;
+  int? get matkulTotal;
+  bool get isError => error.isNotEmpty;
+  bool get isSuccess =>
+      error.isEmpty &&
+      !isLoading &&
+      matkulData.isNotEmpty &&
+      (matkulTotal != null && matkulTotal != 0);
+  bool? get isTokenExpired;
 
   HomeState._();
 
@@ -25,15 +28,7 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       (b) => b
         ..error = ''
         ..isLoading = false
-        ..isExpiredToken = null
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
+        ..matkulData.replace(BuiltList<PerkuliahanItem>()),
     );
   }
 
@@ -42,111 +37,28 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       (b) => b
         ..error = ''
         ..isLoading = true
-        ..isExpiredToken = null
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
+        ..matkulData.replace(BuiltList<PerkuliahanItem>()),
     );
   }
 
-  factory HomeState.error(String error) {
+  factory HomeState.error(String error, {bool? tokenExpired}) {
     return HomeState(
       (b) => b
         ..error = error
-        ..isLoading = true
-        ..isExpiredToken = null
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
+        ..isLoading = false
+        ..isTokenExpired = tokenExpired
+        ..matkulData.replace(BuiltList<PerkuliahanItem>()),
     );
   }
 
-  factory HomeState.success(PerkuliahanList data) {
-    return HomeState(
-      (b) => b
-        ..error = ''
-        ..isLoading = true
-        ..isExpiredToken = false
-        ..isTokenRenewed = false
-        ..data.replace(data),
-    );
-  }
-
-  factory HomeState.auth(Auth auth) {
-    return HomeState(
-      (b) => b
-        ..error = ''
-        ..isLoading = true
-        ..isExpiredToken = null
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
-    );
-  }
-
-  factory HomeState.authError(String error) {
-    return HomeState(
-      (b) => b
-        ..error = error
-        ..isLoading = true
-        ..isExpiredToken = null
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
-    );
-  }
-
-  factory HomeState.expiredToken() {
+  factory HomeState.success(BuiltList<PerkuliahanItem?> data,
+      {int? totalData}) {
     return HomeState(
       (b) => b
         ..error = ''
         ..isLoading = false
-        ..isExpiredToken = true
-        ..isTokenRenewed = false
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
-    );
-  }
-
-  factory HomeState.renewToken(String accessToken) {
-    return HomeState(
-      (b) => b
-        ..error = ''
-        ..isLoading = false
-        ..isExpiredToken = null
-        ..isTokenRenewed = true
-        ..data.replace(
-          PerkuliahanList(
-            (b) => b
-              ..data.replace(BuiltList<PerkuliahanItem>())
-              ..total = 0,
-          ),
-        ),
+        ..matkulTotal = totalData
+        ..matkulData.replace(data),
     );
   }
 }

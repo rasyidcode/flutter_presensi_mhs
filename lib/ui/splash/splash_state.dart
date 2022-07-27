@@ -1,7 +1,6 @@
 library splash_state;
 
 import 'package:built_value/built_value.dart';
-import 'package:flutter_presensi_mhs/data/model/local/auth.dart' as local_auth;
 
 part 'splash_state.g.dart';
 
@@ -9,8 +8,8 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
   bool get isLoading;
   String get error;
   bool? get isFirstTime;
-  bool? get isDBInitiated;
   String get stateMessage;
+  bool get hideStateMessage;
 
   bool get isError => error.isEmpty;
 
@@ -22,6 +21,7 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
     return SplashState((b) => b
       ..isLoading = false
       ..error = ''
+      ..hideStateMessage = false
       ..stateMessage = '');
   }
 
@@ -29,31 +29,27 @@ abstract class SplashState implements Built<SplashState, SplashStateBuilder> {
     return SplashState((b) => b
       ..isLoading = true
       ..error = ''
+      ..hideStateMessage = false
       ..stateMessage = message);
   }
 
-  factory SplashState.loggedIn(local_auth.Auth authLocal) {
-    return SplashState((b) => b
-      ..isLoading = true
-      ..error = ''
-      ..stateMessage = 'Auth Found');
-  }
-
-  factory SplashState.fail(String errorMsg, {bool? isFirstTime}) {
+  factory SplashState.fail(String errorMsg,
+      {bool? isFirstTime, bool? dbInitiated}) {
     return SplashState((b) => b
       ..isLoading = false
       ..error = errorMsg
       ..isFirstTime = isFirstTime
+      ..hideStateMessage = false
       ..stateMessage = '');
   }
 
   factory SplashState.success(String message,
-      {bool? dbInitiated, bool? isFirstTime}) {
+      {bool? dbInitiated, bool? isFirstTime, bool? hideStateMsg}) {
     return SplashState((b) => b
       ..isLoading = true
       ..error = ''
       ..isFirstTime = isFirstTime
-      ..isDBInitiated = dbInitiated
+      ..hideStateMessage = hideStateMsg ?? false
       ..stateMessage = message);
   }
 }

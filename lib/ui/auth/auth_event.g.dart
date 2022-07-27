@@ -8,14 +8,13 @@ part of auth_event;
 
 class _$RenewToken extends RenewToken {
   @override
-  final String refreshToken;
+  final Auth auth;
 
   factory _$RenewToken([void Function(RenewTokenBuilder)? updates]) =>
       (new RenewTokenBuilder()..update(updates)).build();
 
-  _$RenewToken._({required this.refreshToken}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        refreshToken, 'RenewToken', 'refreshToken');
+  _$RenewToken._({required this.auth}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(auth, 'RenewToken', 'auth');
   }
 
   @override
@@ -28,18 +27,17 @@ class _$RenewToken extends RenewToken {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is RenewToken && refreshToken == other.refreshToken;
+    return other is RenewToken && auth == other.auth;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(0, refreshToken.hashCode));
+    return $jf($jc(0, auth.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('RenewToken')
-          ..add('refreshToken', refreshToken))
+    return (newBuiltValueToStringHelper('RenewToken')..add('auth', auth))
         .toString();
   }
 }
@@ -47,16 +45,16 @@ class _$RenewToken extends RenewToken {
 class RenewTokenBuilder implements Builder<RenewToken, RenewTokenBuilder> {
   _$RenewToken? _$v;
 
-  String? _refreshToken;
-  String? get refreshToken => _$this._refreshToken;
-  set refreshToken(String? refreshToken) => _$this._refreshToken = refreshToken;
+  AuthBuilder? _auth;
+  AuthBuilder get auth => _$this._auth ??= new AuthBuilder();
+  set auth(AuthBuilder? auth) => _$this._auth = auth;
 
   RenewTokenBuilder();
 
   RenewTokenBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _refreshToken = $v.refreshToken;
+      _auth = $v.auth.toBuilder();
       _$v = null;
     }
     return this;
@@ -75,10 +73,20 @@ class RenewTokenBuilder implements Builder<RenewToken, RenewTokenBuilder> {
 
   @override
   _$RenewToken build() {
-    final _$result = _$v ??
-        new _$RenewToken._(
-            refreshToken: BuiltValueNullFieldError.checkNotNull(
-                refreshToken, 'RenewToken', 'refreshToken'));
+    _$RenewToken _$result;
+    try {
+      _$result = _$v ?? new _$RenewToken._(auth: auth.build());
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'auth';
+        auth.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            'RenewToken', _$failedField, e.toString());
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }

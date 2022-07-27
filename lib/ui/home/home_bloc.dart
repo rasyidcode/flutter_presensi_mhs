@@ -1,94 +1,113 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_expired_token_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/bloc_error_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/no_auth_found_exception.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/provider_error_exception.dart';
-import 'package:flutter_presensi_mhs/data/repository/auth_repository.dart';
+import 'package:flutter_presensi_mhs/data/exceptions/repository_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/repository/perkuliahan_repository.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_event.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final PerkuliahanRepository _perkuliahanRepository;
-  final AuthRepository _authRepository;
 
-  void initGetAuth() {
-    add(GetAuth());
+  void getListMatkul(String accessToken) {
+    add(GetListMatkul((b) => b..accessToken = accessToken));
   }
 
-  void getListMatkul() {
-    add(GetListMatkul());
-  }
-
-  HomeBloc(this._perkuliahanRepository, this._authRepository)
-      : super(HomeState.initial()) {
-    on<GetAuth>((event, emit) async {
+  HomeBloc(this._perkuliahanRepository) : super(HomeState.initial()) {
+    on<GetListMatkul>((event, emit) async {
       emit(HomeState.loading());
 
-      try {
-        final auth = await _authRepository.getAuth();
-        // _auth = auth;
+      // delay 3 sec
+      await Future.delayed(const Duration(seconds: 3), () => {});
 
-        emit(HomeState.auth(auth));
-      } on NoAuthFoundException catch (e) {
+      try {
+        final result =
+            await _perkuliahanRepository.getListMatkul(event.accessToken);
+        emit(HomeState.success(result.data, totalData: result.total));
+      } on ApiAccessErrorException catch (e) {
+        emit(HomeState.error(e.message));
+      } on ApiExpiredTokenException catch (e) {
+        emit(HomeState.error(e.message, tokenExpired: true));
+      } on RepositoryErrorException catch (e) {
         emit(HomeState.error(e.message));
       } on Exception catch (_) {
         emit(HomeState.error('Something went wrong'));
       }
     });
-    on<GetListMatkul>((event, emit) async {
-      emit(HomeState.loading());
-      // delay 3 sec
-      await Future.delayed(const Duration(seconds: 3), () => {});
-
-      // if (_auth == null) {
-      //   throw BlocErrorException('Auth is null');
-      // }
-
-      // String? accessToken = _auth!.accessToken;
-      // if (accessToken == null) {
-      //   throw BlocErrorException('Access token null');
-      // }
-
-      // try {
-      //   final data = await _perkuliahanRepository.getData(accessToken);
-      //   emit(HomeState.success(data));
-      // } on ApiExpiredTokenException catch (_) {
-      //   emit(HomeState.expiredToken());
-      // } on ApiAccessErrorException catch (e) {
-      //   emit(HomeState.error(e.message));
-      // } on ProviderException catch (e) {
-      //   emit(HomeState.error(e.message));
-      // } on BlocErrorException catch (e) {
-      //   emit(HomeState.error(e.message));
-      // } on Exception catch (_) {
-      //   emit(HomeState.error('Something went wrong'));
-      // }
-    });
     on<DoPresensi>((event, emit) {});
     on<DoLogout>((event, emit) {});
-    on<RenewToken>((event, emit) async {
-      emit(HomeState.loading());
+  }
 
-      // if (_auth == null) {
-      //   throw BlocErrorException('Auth is null');
-      // }
+  String getCurrentDate() {
+    var now = DateTime.now();
+    var month = '';
+    switch (now.month) {
+      case 1:
+        month = 'Januari';
+        break;
+      case 2:
+        month = 'Februari';
+        break;
+      case 3:
+        month = 'Maret';
+        break;
+      case 4:
+        month = 'April';
+        break;
+      case 5:
+        month = 'Mei';
+        break;
+      case 6:
+        month = 'Juni';
+        break;
+      case 7:
+        month = 'Juli';
+        break;
+      case 8:
+        month = 'Agustus';
+        break;
+      case 9:
+        month = 'September';
+        break;
+      case 10:
+        month = 'Oktober';
+        break;
+      case 11:
+        month = 'November';
+        break;
+      case 12:
+        month = 'Desember';
+        break;
+      default:
+        month = 'undefined';
+        break;
+    }
 
-      // String? accessToken = _auth!.accessToken;
-      // if (accessToken == null) {
-      //   throw BlocErrorException('Access token null');
-      // }
-
-      // try {
-      //   String newAccessToken = await _authRepository.renewToken(_auth!);
-      //   emit(HomeState.renewToken(newAccessToken));
-      // } on NoAuthFoundException catch (e) {
-      //   emit(HomeState.error(e.message));
-      // } on Exception catch (_) {
-      //   emit(HomeState.error('Something went wrong'));
-      // }
-    });
+    var day = '';
+    switch (now.weekday) {
+      case 1:
+        day = 'Senin';
+        break;
+      case 2:
+        day = 'Selasa';
+        break;
+      case 3:
+        day = 'Rabu';
+        break;
+      case 4:
+        day = 'Kamis';
+        break;
+      case 5:
+        day = 'Jum\'at';
+        break;
+      case 6:
+        day = 'Sabtu';
+        break;
+      case 7:
+        day = 'Minggu';
+        break;
+    }
+    return '$day, ${now.day} $month ${now.year}';
   }
 }
 

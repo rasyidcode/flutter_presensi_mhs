@@ -39,7 +39,7 @@ class AuthRepository {
     return logoutResult;
   }
 
-  Future<String> renewToken(local.Auth auth) async {
+  Future<local.Auth> renewToken(local.Auth auth) async {
     String? refreshToken = auth.refreshToken;
     if (refreshToken == null) {
       throw RepositoryErrorException('Refresh token is null');
@@ -50,13 +50,13 @@ class AuthRepository {
     );
 
     if (accessToken == null) {
-      throw ApiAccessErrorException('Access token null');
+      throw RepositoryErrorException('Access token null');
     }
 
-    auth.rebuild((b) => b..accessToken = accessToken);
-    await (_provider as AuthProvider).updateToken(auth);
+    var updatedAuth = auth.rebuild((b) => b..accessToken = accessToken);
+    await (_provider as AuthProvider).updateToken(updatedAuth);
 
-    return accessToken;
+    return updatedAuth;
   }
 
   Future<local.Auth> getAuth() async {
