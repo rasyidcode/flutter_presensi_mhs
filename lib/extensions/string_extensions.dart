@@ -4,6 +4,7 @@ import 'package:jwt_decode/jwt_decode.dart';
 extension StringExtensions on String {
   DrawerData jwtDecode() {
     Map<String, dynamic> payload = Jwt.parseJwt(this);
-    return DrawerData(payload['username'] ?? '-', payload['name'] ?? '-');
+    return DrawerData(
+        payload['data']['username'] ?? '-', payload['data']['name'] ?? '-');
   }
 }

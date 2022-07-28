@@ -22,6 +22,7 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
 
   bool? get isDoneGetAuth;
   bool? get isDoneRenewToken;
+  bool get isError => error.isNotEmpty;
 
   AuthState._();
 

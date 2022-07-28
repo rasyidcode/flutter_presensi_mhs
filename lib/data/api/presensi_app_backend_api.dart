@@ -95,7 +95,6 @@ class PresensiAppApi {
         throw ApiAccessErrorException(jsonDecode(response.body)['message']);
       }
     }
-
     return PerkuliahanList.fromJson(response.body);
   }
 

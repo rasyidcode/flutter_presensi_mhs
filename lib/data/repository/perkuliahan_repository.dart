@@ -12,7 +12,6 @@ class PerkuliahanRepository {
   Future<PerkuliahanList> getListMatkul(String accessToken) async {
     final data =
         await _presensiAppApi.getPerkuliahanList(accessToken: accessToken);
-
     if (data == null) {
       throw RepositoryErrorException('Data returns null');
     }

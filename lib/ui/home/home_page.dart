@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_presensi_mhs/ui/home/home_event.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/home_drawer.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/matkul_item.dart';
+import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 
@@ -62,6 +65,13 @@ class _HomePageState extends State<HomePage> {
               }
             }
           }
+
+          if (authstate.isError) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(authstate.error)));
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const LoginPage()));
+          }
         },
         builder: (context, authstate) {
           String? accessToken = authstate.auth.accessToken;
@@ -98,7 +108,8 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
 
-                  if (homestate.isError) {
+                  bool? isTokenExpired = homestate.isTokenExpired;
+                  if (homestate.isError && isTokenExpired == null) {
                     return Center(child: Text(homestate.error));
                   }
 
@@ -113,15 +124,18 @@ class _HomePageState extends State<HomePage> {
                         BlocProvider.of<HomeBloc>(context).getCurrentDate(),
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
-                      // const Divider(),
-                      // ListView.builder(
-                      //   itemCount: homestate.matkulTotal,
-                      //   itemBuilder: (context, index) {
-                      //     return MatkulItem(
-                      //       perkuliahanItem: homestate.matkulData[index],
-                      //     );
-                      //   },
-                      // )
+                      const Divider(),
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: homestate.matkulTotal,
+                          itemBuilder: (context, index) {
+                            return MatkulItem(
+                              perkuliahanItem: homestate.matkulData[index],
+                            );
+                          },
+                        ),
+                      )
                     ],
                   );
                 },
