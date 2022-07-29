@@ -13,28 +13,53 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     add(GetListMatkul((b) => b..accessToken = accessToken));
   }
 
+  void doPresensi(String accessToken, String code) {
+    add(DoPresensi((b) => b..code = code));
+  }
+
   HomeBloc(this._perkuliahanRepository) : super(HomeState.initial()) {
     on<GetListMatkul>((event, emit) async {
       emit(HomeState.loading());
 
-      // delay 3 sec
-      await Future.delayed(const Duration(seconds: 3), () => {});
-
       try {
         final result =
             await _perkuliahanRepository.getListMatkul(event.accessToken);
-        emit(HomeState.success(result.data, totalData: result.total));
+        emit(HomeState.success(data: result.data, totalData: result.total));
       } on ApiAccessErrorException catch (e) {
         emit(HomeState.error(e.message));
       } on ApiExpiredTokenException catch (e) {
-        emit(HomeState.error(e.message, tokenExpired: true));
+        emit(HomeState.error(e.message,
+            tokenExpired: true, currentState: 'get_list_matkul'));
       } on RepositoryErrorException catch (e) {
         emit(HomeState.error(e.message));
       } on Exception catch (_) {
         emit(HomeState.error('Something went wrong'));
       }
     });
-    on<DoPresensi>((event, emit) {});
+    on<DoPresensi>((event, emit) async {
+      emit(HomeState.loading(isPresensiLoading: true));
+
+      try {
+        final result = await _perkuliahanRepository.doPresensi(
+            event.accessToken, event.code);
+        emit(HomeState.success(
+            data: state.matkulData,
+            totalData: state.matkulTotal,
+            dataPresensi: result,
+            currentCode: event.code));
+      } on ApiAccessErrorException catch (e) {
+        emit(HomeState.error(e.message));
+      } on ApiExpiredTokenException catch (e) {
+        emit(HomeState.error(e.message,
+            tokenExpired: true,
+            currentState: 'do_presensi',
+            currentCode: event.code));
+      } on RepositoryErrorException catch (e) {
+        emit(HomeState.error(e.message));
+      } on Exception catch (_) {
+        emit(HomeState.error('Something went wrong'));
+      }
+    });
     on<DoLogout>((event, emit) {});
   }
 

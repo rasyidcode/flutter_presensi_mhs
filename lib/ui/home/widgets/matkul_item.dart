@@ -1,20 +1,100 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
+import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/detail/detail_page.dart';
+import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/scan/scan_page.dart';
 
 class MatkulItem extends StatefulWidget {
   final PerkuliahanItem? perkuliahanItem;
+  final Function()? presensiAction;
 
-  const MatkulItem({Key? key, required this.perkuliahanItem}) : super(key: key);
+  const MatkulItem({Key? key, this.perkuliahanItem, this.presensiAction})
+      : super(key: key);
 
   @override
   State<MatkulItem> createState() => _MatkulItemState();
 }
 
 class _MatkulItemState extends State<MatkulItem> {
+  bool isDoingPresensi = false;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  bool _isCanPresensi(String? status) {
+    return status == 'not_started' || status == 'ongoing';
+  }
+
+  Widget _buildPresensiButton(BuildContext context,
+      {required String? statusPerkuliahan}) {
+    return _isCanPresensi(statusPerkuliahan)
+        ? !isDoingPresensi
+            ? MaterialButton(
+                minWidth: 0.0,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: kPrimaryButtonColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                onPressed: () async {
+                  String code = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const ScanPage()));
+                  log('dosen_qrcode:$code');
+                  if (!mounted) return;
+                  String? accessToken =
+                      BlocProvider.of<AuthBloc>(context).state.auth.accessToken;
+                  if (accessToken != null) {
+                    BlocProvider.of<HomeBloc>(context)
+                        .doPresensi(accessToken, code);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Access token is null'),
+                      ),
+                    );
+                  }
+                },
+                child: Row(
+                  children: const [
+                    Text(
+                      'Presensi',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                    SizedBox(width: 4.0),
+                    Icon(
+                      Icons.qr_code_scanner,
+                      size: 16.0,
+                    )
+                  ],
+                ),
+              )
+            : const CircularProgressIndicator()
+        : Text(
+            'Perkuliahan telah selesai',
+            style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -139,36 +219,9 @@ class _MatkulItemState extends State<MatkulItem> {
                           ],
                         ),
                       ),
-                      MaterialButton(
-                        minWidth: 0.0,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        color: kPrimaryButtonColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const ScanPage()));
-                        },
-                        child: Row(
-                          children: const [
-                            Text(
-                              'Presensi',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                            SizedBox(width: 4.0),
-                            Icon(
-                              Icons.qr_code_scanner,
-                              size: 16.0,
-                            )
-                          ],
-                        ),
-                      )
+                      _buildPresensiButton(context,
+                          statusPerkuliahan:
+                              widget.perkuliahanItem?.statusPerkuliahan)
                     ],
                   )
                 ],

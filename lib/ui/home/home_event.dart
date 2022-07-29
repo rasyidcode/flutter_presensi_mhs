@@ -6,8 +6,6 @@ part 'home_event.g.dart';
 
 abstract class HomeEvent {}
 
-class DoPresensi extends HomeEvent {}
-
 abstract class GetListMatkul extends HomeEvent
     implements Built<GetListMatkul, GetListMatkulBuilder> {
   GetListMatkul._();
@@ -18,8 +16,14 @@ abstract class GetListMatkul extends HomeEvent
       _$GetListMatkul;
 }
 
-class GetAuth extends HomeEvent {}
+abstract class DoPresensi extends HomeEvent
+    implements Built<DoPresensi, DoPresensiBuilder> {
+  String get code;
+  String get accessToken;
+
+  DoPresensi._();
+
+  factory DoPresensi([Function(DoPresensiBuilder b) updates]) = _$DoPresensi;
+}
 
 class DoLogout extends HomeEvent {}
-
-class RenewToken extends HomeEvent {}

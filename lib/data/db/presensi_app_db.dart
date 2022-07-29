@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -26,6 +28,7 @@ class PresensiAppDb {
       ''');
       }).then((database) {
         db = database;
+        log('presensi_app_db|db:$db');
       });
     }).onError((error, stackTrace) {
       db = null;

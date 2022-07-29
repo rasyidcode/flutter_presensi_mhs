@@ -10,6 +10,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Auth.serializer)
       ..add(PerkuliahanItem.serializer)
       ..add(PerkuliahanList.serializer)
+      ..add(PresensiResult.serializer)
       ..addBuilderFactory(
           const FullType(
               BuiltList, const [const FullType.nullable(PerkuliahanItem)]),

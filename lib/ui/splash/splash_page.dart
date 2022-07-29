@@ -62,14 +62,15 @@ class _SplashPageState extends State<SplashPage> {
                 listener: (context, splashstate) {
                   bool? isFirstTime = splashstate.isFirstTime;
                   if (isFirstTime != null) {
-                    Timer(const Duration(seconds: 2), () {
-                      if (isFirstTime) {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (_) => const WelcomePage()));
-                      } else {
-                        context.read<AuthBloc>().getAuth();
-                      }
-                    });
+                    if (isFirstTime) {
+                      Timer(const Duration(seconds: 2), () {
+                        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        //     builder: (_) => const WelcomePage()));
+                        print('firstTime');
+                      });
+                    } else {
+                      context.read<AuthBloc>().getAuth();
+                    }
                   }
                 },
                 builder: (context, splashstate) {

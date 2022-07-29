@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_presensi_mhs/data/db/presensi_app_db.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/first_time_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/provider_error_exception.dart';
@@ -15,7 +17,7 @@ class AppProvider extends BaseProvider {
   Future<bool> checkFirstTime() async {
     final data = await _presensiAppDb.db
         ?.rawQuery('SELECT COUNT(*) as total FROM firstTime');
-
+    log('app_provider|db:${_presensiAppDb.db}');
     if (data == null) {
       throw ProviderErrorException('Query returns null');
     }

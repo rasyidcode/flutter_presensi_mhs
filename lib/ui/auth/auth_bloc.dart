@@ -23,8 +23,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetAuth>((event, emit) async {
       emit(AuthState.loading(stateMsg: 'Getting auth...'));
 
-      await Future.delayed(const Duration(seconds: 3), () => {});
-
       try {
         final auth = await _authRepository.getAuth();
         emit(AuthState.success(auth,
@@ -37,8 +35,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     on<RenewToken>((event, emit) async {
       emit(AuthState.loading());
-
-      await Future.delayed(const Duration(seconds: 3), () => {});
 
       try {
         final auth = await _authRepository.renewToken(event.auth);

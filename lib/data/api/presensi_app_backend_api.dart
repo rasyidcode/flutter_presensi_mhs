@@ -6,6 +6,7 @@ import 'package:flutter_presensi_mhs/data/exceptions/api_expired_token_exception
 import 'package:flutter_presensi_mhs/data/model/auth/auth.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/presensi_result.dart';
 import 'package:http/http.dart' as http;
 
 const baseApiURL = 'https://presensiapp.my.id/api/v1';
@@ -95,6 +96,7 @@ class PresensiAppApi {
         throw ApiAccessErrorException(jsonDecode(response.body)['message']);
       }
     }
+
     return PerkuliahanList.fromJson(response.body);
   }
 
@@ -113,13 +115,24 @@ class PresensiAppApi {
     );
 
     if (response.statusCode != 200) {
-      throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      if (response.statusCode == 401) {
+        String? decoded = jsonDecode(response.body)['message'];
+        if (decoded == null) {
+          throw ApiAccessErrorException('Message param doesnt exist');
+        }
+
+        if (decoded.contains('Expired token')) {
+          throw ApiExpiredTokenException('Token is expired');
+        }
+      } else {
+        throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      }
     }
 
     return PerkuliahanItem.fromJson(response.body);
   }
 
-  Future<String?> doPresensi({
+  Future<PresensiResult?> doPresensi({
     required String accessToken,
     required String qrcode,
   }) async {
@@ -131,9 +144,20 @@ class PresensiAppApi {
     );
 
     if (response.statusCode != 200) {
-      throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      if (response.statusCode == 401) {
+        String? decoded = jsonDecode(response.body)['message'];
+        if (decoded == null) {
+          throw ApiAccessErrorException('Message param doesnt exist');
+        }
+
+        if (decoded.contains('Expired token')) {
+          throw ApiExpiredTokenException('Token is expired');
+        }
+      } else {
+        throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      }
     }
 
-    return jsonDecode(response.body)['status_presensi'];
+    return PresensiResult.fromJson(response.body);
   }
 }

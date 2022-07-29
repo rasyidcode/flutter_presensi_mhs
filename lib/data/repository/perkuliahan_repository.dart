@@ -2,6 +2,7 @@ import 'package:flutter_presensi_mhs/data/api/presensi_app_backend_api.dart';
 
 import 'package:flutter_presensi_mhs/data/exceptions/repository_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_list.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/presensi_result.dart';
 
 class PerkuliahanRepository {
   final PresensiAppApi _presensiAppApi;
@@ -17,6 +18,16 @@ class PerkuliahanRepository {
     }
 
     return data;
+  }
+
+  Future<PresensiResult> doPresensi(String accessToken, String code) async {
+    final result = await _presensiAppApi.doPresensi(
+        accessToken: accessToken, qrcode: code);
+    if (result == null) {
+      throw RepositoryErrorException('Result returns null');
+    }
+
+    return result;
   }
 
   // get detail perkuliahan

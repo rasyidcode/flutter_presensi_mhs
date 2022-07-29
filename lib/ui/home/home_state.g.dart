@@ -12,11 +12,21 @@ class _$HomeState extends HomeState {
   @override
   final bool isLoading;
   @override
+  final bool? isPresensiLoading;
+  @override
+  final bool? isPresensiSuccess;
+  @override
   final BuiltList<PerkuliahanItem?> matkulData;
+  @override
+  final PresensiResult? presensiResult;
   @override
   final int? matkulTotal;
   @override
   final bool? isTokenExpired;
+  @override
+  final String? currentState;
+  @override
+  final String? currentCode;
 
   factory _$HomeState([void Function(HomeStateBuilder)? updates]) =>
       (new HomeStateBuilder()..update(updates)).build();
@@ -24,9 +34,14 @@ class _$HomeState extends HomeState {
   _$HomeState._(
       {required this.error,
       required this.isLoading,
+      this.isPresensiLoading,
+      this.isPresensiSuccess,
       required this.matkulData,
+      this.presensiResult,
       this.matkulTotal,
-      this.isTokenExpired})
+      this.isTokenExpired,
+      this.currentState,
+      this.currentCode})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(error, 'HomeState', 'error');
     BuiltValueNullFieldError.checkNotNull(isLoading, 'HomeState', 'isLoading');
@@ -47,19 +62,36 @@ class _$HomeState extends HomeState {
     return other is HomeState &&
         error == other.error &&
         isLoading == other.isLoading &&
+        isPresensiLoading == other.isPresensiLoading &&
+        isPresensiSuccess == other.isPresensiSuccess &&
         matkulData == other.matkulData &&
+        presensiResult == other.presensiResult &&
         matkulTotal == other.matkulTotal &&
-        isTokenExpired == other.isTokenExpired;
+        isTokenExpired == other.isTokenExpired &&
+        currentState == other.currentState &&
+        currentCode == other.currentCode;
   }
 
   @override
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc($jc($jc(0, error.hashCode), isLoading.hashCode),
-                matkulData.hashCode),
-            matkulTotal.hashCode),
-        isTokenExpired.hashCode));
+            $jc(
+                $jc(
+                    $jc(
+                        $jc(
+                            $jc(
+                                $jc(
+                                    $jc($jc(0, error.hashCode),
+                                        isLoading.hashCode),
+                                    isPresensiLoading.hashCode),
+                                isPresensiSuccess.hashCode),
+                            matkulData.hashCode),
+                        presensiResult.hashCode),
+                    matkulTotal.hashCode),
+                isTokenExpired.hashCode),
+            currentState.hashCode),
+        currentCode.hashCode));
   }
 
   @override
@@ -67,9 +99,14 @@ class _$HomeState extends HomeState {
     return (newBuiltValueToStringHelper('HomeState')
           ..add('error', error)
           ..add('isLoading', isLoading)
+          ..add('isPresensiLoading', isPresensiLoading)
+          ..add('isPresensiSuccess', isPresensiSuccess)
           ..add('matkulData', matkulData)
+          ..add('presensiResult', presensiResult)
           ..add('matkulTotal', matkulTotal)
-          ..add('isTokenExpired', isTokenExpired))
+          ..add('isTokenExpired', isTokenExpired)
+          ..add('currentState', currentState)
+          ..add('currentCode', currentCode))
         .toString();
   }
 }
@@ -85,11 +122,27 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   bool? get isLoading => _$this._isLoading;
   set isLoading(bool? isLoading) => _$this._isLoading = isLoading;
 
+  bool? _isPresensiLoading;
+  bool? get isPresensiLoading => _$this._isPresensiLoading;
+  set isPresensiLoading(bool? isPresensiLoading) =>
+      _$this._isPresensiLoading = isPresensiLoading;
+
+  bool? _isPresensiSuccess;
+  bool? get isPresensiSuccess => _$this._isPresensiSuccess;
+  set isPresensiSuccess(bool? isPresensiSuccess) =>
+      _$this._isPresensiSuccess = isPresensiSuccess;
+
   ListBuilder<PerkuliahanItem?>? _matkulData;
   ListBuilder<PerkuliahanItem?> get matkulData =>
       _$this._matkulData ??= new ListBuilder<PerkuliahanItem?>();
   set matkulData(ListBuilder<PerkuliahanItem?>? matkulData) =>
       _$this._matkulData = matkulData;
+
+  PresensiResultBuilder? _presensiResult;
+  PresensiResultBuilder get presensiResult =>
+      _$this._presensiResult ??= new PresensiResultBuilder();
+  set presensiResult(PresensiResultBuilder? presensiResult) =>
+      _$this._presensiResult = presensiResult;
 
   int? _matkulTotal;
   int? get matkulTotal => _$this._matkulTotal;
@@ -100,6 +153,14 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   set isTokenExpired(bool? isTokenExpired) =>
       _$this._isTokenExpired = isTokenExpired;
 
+  String? _currentState;
+  String? get currentState => _$this._currentState;
+  set currentState(String? currentState) => _$this._currentState = currentState;
+
+  String? _currentCode;
+  String? get currentCode => _$this._currentCode;
+  set currentCode(String? currentCode) => _$this._currentCode = currentCode;
+
   HomeStateBuilder();
 
   HomeStateBuilder get _$this {
@@ -107,9 +168,14 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
     if ($v != null) {
       _error = $v.error;
       _isLoading = $v.isLoading;
+      _isPresensiLoading = $v.isPresensiLoading;
+      _isPresensiSuccess = $v.isPresensiSuccess;
       _matkulData = $v.matkulData.toBuilder();
+      _presensiResult = $v.presensiResult?.toBuilder();
       _matkulTotal = $v.matkulTotal;
       _isTokenExpired = $v.isTokenExpired;
+      _currentState = $v.currentState;
+      _currentCode = $v.currentCode;
       _$v = null;
     }
     return this;
@@ -136,14 +202,21 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
                   error, 'HomeState', 'error'),
               isLoading: BuiltValueNullFieldError.checkNotNull(
                   isLoading, 'HomeState', 'isLoading'),
+              isPresensiLoading: isPresensiLoading,
+              isPresensiSuccess: isPresensiSuccess,
               matkulData: matkulData.build(),
+              presensiResult: _presensiResult?.build(),
               matkulTotal: matkulTotal,
-              isTokenExpired: isTokenExpired);
+              isTokenExpired: isTokenExpired,
+              currentState: currentState,
+              currentCode: currentCode);
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'matkulData';
         matkulData.build();
+        _$failedField = 'presensiResult';
+        _presensiResult?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             'HomeState', _$failedField, e.toString());

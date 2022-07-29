@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -59,12 +58,15 @@ class _ScanPageState extends State<ScanPage> {
               onQRViewCreated: (QRViewController ctrl) {
                 setState(() {
                   qrViewController = ctrl;
+                  ctrl.resumeCamera();
                 });
                 ctrl.scannedDataStream.listen((event) {
-                  if (kDebugMode) {
-                    print(event.code);
-                  }
-                  scanRes = event;
+                  setState(() {
+                    scanRes = event;
+                  });
+                  log('${DateTime.now().toIso8601String()}_listenQR: ${event.code}');
+
+                  Navigator.of(context, rootNavigator: true).pop(event.code);
                 });
               },
               overlay: QrScannerOverlayShape(
@@ -86,7 +88,10 @@ class _ScanPageState extends State<ScanPage> {
             'Arahkan ke QRCode milik dosen, selain itu scan akan gagal!',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyText2,
-          )
+          ),
+          (scanRes != null && scanRes!.code != null)
+              ? Text(scanRes!.code!)
+              : Container()
         ],
       ),
     );

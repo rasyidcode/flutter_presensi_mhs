@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/provider_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/repository/app_repository.dart';
@@ -15,11 +17,9 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     on<CheckFirstTime>((event, emit) async {
       emit(SplashState.loading('Checking first time login...'));
 
-      // delay 3 sec
-      await Future.delayed(const Duration(seconds: 3), () => {});
-
       try {
         bool isFirstTime = await _appRepository.checkFirstTime();
+        log('splash_bloc|isFirstTime:$isFirstTime', time: DateTime.now());
         emit(SplashState.success(
             isFirstTime
                 ? 'This is your first time...'
@@ -27,6 +27,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
             isFirstTime: isFirstTime,
             hideStateMsg: true));
       } on ProviderErrorException catch (e) {
+        log('splash_bloc|isFirstTime:true', time: DateTime.now());
         emit(SplashState.fail(e.message, isFirstTime: true));
       } on Exception catch (_) {
         emit(SplashState.fail('Something went wrong'));
