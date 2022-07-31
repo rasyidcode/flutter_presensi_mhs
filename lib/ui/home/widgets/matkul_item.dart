@@ -74,8 +74,15 @@ class _MatkulItemState extends State<MatkulItem> {
 
         String? accessToken =
             BlocProvider.of<AuthBloc>(context).state.auth.accessToken;
-        if (accessToken != null) {
-          BlocProvider.of<HomeBloc>(context).doPresensi(accessToken, code);
+        String? idJadwal = widget.perkuliahanItem?.id;
+
+        if (accessToken != null && idJadwal != null) {
+          log('${(MatkulItem).toString()} - accessToken: $accessToken');
+          log('${(MatkulItem).toString()} - code: $code');
+          log('${(MatkulItem).toString()} - idJadwal: $idJadwal');
+
+          BlocProvider.of<HomeBloc>(context)
+              .doPresensi(accessToken, code, idJadwal);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

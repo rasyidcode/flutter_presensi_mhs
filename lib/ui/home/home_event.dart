@@ -20,6 +20,7 @@ abstract class DoPresensi extends HomeEvent
     implements Built<DoPresensi, DoPresensiBuilder> {
   String get code;
   String get accessToken;
+  String get idJadwal;
 
   DoPresensi._();
 

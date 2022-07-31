@@ -71,11 +71,14 @@ class _HomePageState extends State<HomePage> {
                 } else if (currentState == 'do_presensi') {
                   String? code =
                       BlocProvider.of<HomeBloc>(context).state.currentCode;
-                  if (code != null) {
+                  String? idJadwal =
+                      BlocProvider.of<HomeBloc>(context).state.currentIdJadwal;
+                  if (code != null && idJadwal != null) {
                     log('${(HomePage).toString()} - accessToken: $accessToken');
                     log('${(HomePage).toString()} - code: $code');
+                    log('${(HomePage).toString()} - idJadwal: $idJadwal');
                     BlocProvider.of<HomeBloc>(context)
-                        .doPresensi(accessToken, code);
+                        .doPresensi(accessToken, code, idJadwal);
                   }
                 }
               }

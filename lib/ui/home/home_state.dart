@@ -25,6 +25,7 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
   bool? get isTokenExpired;
   String? get currentState;
   String? get currentCode;
+  String? get currentIdJadwal;
 
   HomeState._();
 
@@ -62,7 +63,8 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       {bool? tokenExpired,
       String? currentState,
       String? currentCode,
-      BuiltList<PerkuliahanItem?>? matkulData}) {
+      BuiltList<PerkuliahanItem?>? matkulData,
+      String? idJadwal}) {
     return HomeState(
       (b) => b
         ..error = error
@@ -70,6 +72,7 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
         ..isTokenExpired = tokenExpired
         ..currentState = currentState
         ..currentCode = currentCode
+        ..currentIdJadwal = idJadwal
         ..matkulData.replace(matkulData ?? BuiltList<PerkuliahanItem>())
         ..presensiResult.replace(PresensiResult((b) => b
           ..message = ''
@@ -82,7 +85,8 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       int? totalData,
       bool? isPresensiLoading,
       PresensiResult? dataPresensi,
-      String? currentCode}) {
+      String? currentCode,
+      String? idJadwal}) {
     return HomeState(
       (b) => b
         ..error = ''
@@ -90,6 +94,7 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
         ..matkulTotal = totalData
         ..isPresensiLoading = isPresensiLoading
         ..currentCode = currentCode
+        ..currentIdJadwal = idJadwal
         ..matkulData.replace(data ?? BuiltList<PerkuliahanItem>())
         ..presensiResult.replace(dataPresensi ??
             PresensiResult((b) => b

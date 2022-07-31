@@ -27,6 +27,8 @@ class _$HomeState extends HomeState {
   final String? currentState;
   @override
   final String? currentCode;
+  @override
+  final String? currentIdJadwal;
 
   factory _$HomeState([void Function(HomeStateBuilder)? updates]) =>
       (new HomeStateBuilder()..update(updates)).build();
@@ -41,7 +43,8 @@ class _$HomeState extends HomeState {
       this.matkulTotal,
       this.isTokenExpired,
       this.currentState,
-      this.currentCode})
+      this.currentCode,
+      this.currentIdJadwal})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(error, 'HomeState', 'error');
     BuiltValueNullFieldError.checkNotNull(
@@ -68,7 +71,8 @@ class _$HomeState extends HomeState {
         matkulTotal == other.matkulTotal &&
         isTokenExpired == other.isTokenExpired &&
         currentState == other.currentState &&
-        currentCode == other.currentCode;
+        currentCode == other.currentCode &&
+        currentIdJadwal == other.currentIdJadwal;
   }
 
   @override
@@ -81,16 +85,18 @@ class _$HomeState extends HomeState {
                         $jc(
                             $jc(
                                 $jc(
-                                    $jc($jc(0, error.hashCode),
-                                        isLoading.hashCode),
-                                    isPresensiLoading.hashCode),
-                                isPresensiSuccess.hashCode),
-                            matkulData.hashCode),
-                        presensiResult.hashCode),
-                    matkulTotal.hashCode),
-                isTokenExpired.hashCode),
-            currentState.hashCode),
-        currentCode.hashCode));
+                                    $jc(
+                                        $jc($jc(0, error.hashCode),
+                                            isLoading.hashCode),
+                                        isPresensiLoading.hashCode),
+                                    isPresensiSuccess.hashCode),
+                                matkulData.hashCode),
+                            presensiResult.hashCode),
+                        matkulTotal.hashCode),
+                    isTokenExpired.hashCode),
+                currentState.hashCode),
+            currentCode.hashCode),
+        currentIdJadwal.hashCode));
   }
 
   @override
@@ -105,7 +111,8 @@ class _$HomeState extends HomeState {
           ..add('matkulTotal', matkulTotal)
           ..add('isTokenExpired', isTokenExpired)
           ..add('currentState', currentState)
-          ..add('currentCode', currentCode))
+          ..add('currentCode', currentCode)
+          ..add('currentIdJadwal', currentIdJadwal))
         .toString();
   }
 }
@@ -160,6 +167,11 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   String? get currentCode => _$this._currentCode;
   set currentCode(String? currentCode) => _$this._currentCode = currentCode;
 
+  String? _currentIdJadwal;
+  String? get currentIdJadwal => _$this._currentIdJadwal;
+  set currentIdJadwal(String? currentIdJadwal) =>
+      _$this._currentIdJadwal = currentIdJadwal;
+
   HomeStateBuilder();
 
   HomeStateBuilder get _$this {
@@ -175,6 +187,7 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
       _isTokenExpired = $v.isTokenExpired;
       _currentState = $v.currentState;
       _currentCode = $v.currentCode;
+      _currentIdJadwal = $v.currentIdJadwal;
       _$v = null;
     }
     return this;
@@ -207,7 +220,8 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
               matkulTotal: matkulTotal,
               isTokenExpired: isTokenExpired,
               currentState: currentState,
-              currentCode: currentCode);
+              currentCode: currentCode,
+              currentIdJadwal: currentIdJadwal);
     } catch (_) {
       late String _$failedField;
       try {

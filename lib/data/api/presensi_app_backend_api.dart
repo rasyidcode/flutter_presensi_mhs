@@ -132,14 +132,14 @@ class PresensiAppApi {
     return PerkuliahanItem.fromJson(response.body);
   }
 
-  Future<PresensiResult?> doPresensi({
-    required String accessToken,
-    required String qrcode,
-  }) async {
+  Future<PresensiResult?> doPresensi(
+      {required String accessToken,
+      required String qrcode,
+      required String idJadwal}) async {
     final response = await _client.post(
       Uri.parse(baseApiURL + '/perkuliahan/do-presensi'),
       headers: {HttpHeaders.authorizationHeader: 'Bearer $accessToken'},
-      body: {'qrsecret': qrcode},
+      body: {'qrsecret': qrcode, 'id_jadwal': idJadwal},
     );
 
     if (response.statusCode != 200) {

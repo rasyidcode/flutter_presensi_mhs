@@ -15,15 +15,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     add(GetListMatkul((b) => b..accessToken = accessToken));
   }
 
-  void doPresensi(String accessToken, String code) {
+  void doPresensi(String accessToken, String code, String idJadwal) {
     add(DoPresensi((b) => b
       ..code = code
-      ..accessToken = accessToken));
+      ..accessToken = accessToken
+      ..idJadwal = idJadwal));
   }
 
   HomeBloc(this._perkuliahanRepository) : super(HomeState.initial()) {
     on<GetListMatkul>((event, emit) async {
-      emit(HomeState.loading());
+      emit(HomeState.loading(isLoading: true));
 
       try {
         final result =
@@ -49,32 +50,37 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       try {
         final result = await _perkuliahanRepository.doPresensi(
-            event.accessToken, event.code);
+            event.accessToken, event.code, event.idJadwal);
         emit(HomeState.success(
             data: state.matkulData,
             totalData: state.matkulTotal,
             dataPresensi: result,
-            currentCode: event.code));
+            currentCode: event.code,
+            idJadwal: state.currentIdJadwal));
       } on ApiAccessErrorException catch (e) {
         emit(HomeState.error(e.message,
             currentState: 'do_presensi',
             currentCode: event.code,
-            matkulData: state.matkulData));
+            matkulData: state.matkulData,
+            idJadwal: state.currentIdJadwal));
       } on ApiExpiredTokenException catch (e) {
         emit(HomeState.error(e.message,
             tokenExpired: true,
             currentState: 'do_presensi',
-            currentCode: event.code));
+            currentCode: event.code,
+            idJadwal: state.currentIdJadwal));
       } on RepositoryErrorException catch (e) {
         emit(HomeState.error(e.message,
             currentState: 'do_presensi',
             currentCode: event.code,
-            matkulData: state.matkulData));
+            matkulData: state.matkulData,
+            idJadwal: state.currentIdJadwal));
       } on Exception catch (_) {
         emit(HomeState.error('Something went wrong',
             currentState: 'do_presensi',
             currentCode: event.code,
-            matkulData: state.matkulData));
+            matkulData: state.matkulData,
+            idJadwal: state.currentIdJadwal));
       }
     });
     on<DoLogout>((event, emit) {});

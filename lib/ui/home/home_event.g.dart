@@ -90,14 +90,19 @@ class _$DoPresensi extends DoPresensi {
   final String code;
   @override
   final String accessToken;
+  @override
+  final String idJadwal;
 
   factory _$DoPresensi([void Function(DoPresensiBuilder)? updates]) =>
       (new DoPresensiBuilder()..update(updates)).build();
 
-  _$DoPresensi._({required this.code, required this.accessToken}) : super._() {
+  _$DoPresensi._(
+      {required this.code, required this.accessToken, required this.idJadwal})
+      : super._() {
     BuiltValueNullFieldError.checkNotNull(code, 'DoPresensi', 'code');
     BuiltValueNullFieldError.checkNotNull(
         accessToken, 'DoPresensi', 'accessToken');
+    BuiltValueNullFieldError.checkNotNull(idJadwal, 'DoPresensi', 'idJadwal');
   }
 
   @override
@@ -112,19 +117,22 @@ class _$DoPresensi extends DoPresensi {
     if (identical(other, this)) return true;
     return other is DoPresensi &&
         code == other.code &&
-        accessToken == other.accessToken;
+        accessToken == other.accessToken &&
+        idJadwal == other.idJadwal;
   }
 
   @override
   int get hashCode {
-    return $jf($jc($jc(0, code.hashCode), accessToken.hashCode));
+    return $jf($jc(
+        $jc($jc(0, code.hashCode), accessToken.hashCode), idJadwal.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('DoPresensi')
           ..add('code', code)
-          ..add('accessToken', accessToken))
+          ..add('accessToken', accessToken)
+          ..add('idJadwal', idJadwal))
         .toString();
   }
 }
@@ -140,6 +148,10 @@ class DoPresensiBuilder implements Builder<DoPresensi, DoPresensiBuilder> {
   String? get accessToken => _$this._accessToken;
   set accessToken(String? accessToken) => _$this._accessToken = accessToken;
 
+  String? _idJadwal;
+  String? get idJadwal => _$this._idJadwal;
+  set idJadwal(String? idJadwal) => _$this._idJadwal = idJadwal;
+
   DoPresensiBuilder();
 
   DoPresensiBuilder get _$this {
@@ -147,6 +159,7 @@ class DoPresensiBuilder implements Builder<DoPresensi, DoPresensiBuilder> {
     if ($v != null) {
       _code = $v.code;
       _accessToken = $v.accessToken;
+      _idJadwal = $v.idJadwal;
       _$v = null;
     }
     return this;
@@ -170,7 +183,9 @@ class DoPresensiBuilder implements Builder<DoPresensi, DoPresensiBuilder> {
             code: BuiltValueNullFieldError.checkNotNull(
                 code, 'DoPresensi', 'code'),
             accessToken: BuiltValueNullFieldError.checkNotNull(
-                accessToken, 'DoPresensi', 'accessToken'));
+                accessToken, 'DoPresensi', 'accessToken'),
+            idJadwal: BuiltValueNullFieldError.checkNotNull(
+                idJadwal, 'DoPresensi', 'idJadwal'));
     replace(_$result);
     return _$result;
   }

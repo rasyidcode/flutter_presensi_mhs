@@ -20,9 +20,13 @@ class PerkuliahanRepository {
     return data;
   }
 
-  Future<PresensiResult> doPresensi(String accessToken, String code) async {
+  Future<PresensiResult> doPresensi(
+      String accessToken, String code, String idJadwal) async {
     final result = await _presensiAppApi.doPresensi(
-        accessToken: accessToken, qrcode: code);
+      accessToken: accessToken,
+      qrcode: code,
+      idJadwal: idJadwal,
+    );
     if (result == null) {
       throw RepositoryErrorException('Result returns null');
     }
