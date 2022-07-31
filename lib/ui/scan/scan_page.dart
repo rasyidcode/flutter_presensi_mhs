@@ -61,12 +61,14 @@ class _ScanPageState extends State<ScanPage> {
                   ctrl.resumeCamera();
                 });
                 ctrl.scannedDataStream.listen((event) {
+                  if (scanRes == null) {
+                    Navigator.of(context, rootNavigator: true).pop(event.code);
+                    log('${DateTime.now().toIso8601String()}poping: ${event.code}');
+                  }
+
                   setState(() {
                     scanRes = event;
                   });
-                  log('${DateTime.now().toIso8601String()}_listenQR: ${event.code}');
-
-                  Navigator.of(context, rootNavigator: true).pop(event.code);
                 });
               },
               overlay: QrScannerOverlayShape(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
@@ -105,12 +106,10 @@ class PresensiAppApi {
     required String accessToken,
     required int perkuliahanId,
   }) async {
-    final urlEncoded =
-        Uri.encodeFull(baseApiURL + '/perkuliahan/$perkuliahanId');
     final response = await _client.get(
-      Uri.parse(urlEncoded),
+      Uri.parse(baseApiURL + '/perkuliahan/$perkuliahanId'),
       headers: {
-        HttpHeaders.authorizationHeader: accessToken,
+        HttpHeaders.authorizationHeader: 'Bearer $accessToken',
       },
     );
 
@@ -129,6 +128,7 @@ class PresensiAppApi {
       }
     }
 
+    log('${(PresensiAppApi).toString()} - response body: ${response.body}');
     return PerkuliahanItem.fromJson(response.body);
   }
 
@@ -136,10 +136,9 @@ class PresensiAppApi {
     required String accessToken,
     required String qrcode,
   }) async {
-    final urlEncoded = Uri.encodeFull(baseApiURL + '/perkuliahan/do-presensi');
     final response = await _client.post(
-      Uri.parse(urlEncoded),
-      headers: {HttpHeaders.authorizationHeader: accessToken},
+      Uri.parse(baseApiURL + '/perkuliahan/do-presensi'),
+      headers: {HttpHeaders.authorizationHeader: 'Bearer $accessToken'},
       body: {'qrsecret': qrcode},
     );
 
@@ -158,6 +157,7 @@ class PresensiAppApi {
       }
     }
 
+    log('${(PresensiAppApi).toString()} - response body: ${response.body}');
     return PresensiResult.fromJson(response.body);
   }
 }

@@ -23,7 +23,7 @@ class _$PresensiResultSerializer
       'message',
       serializers.serialize(object.message,
           specifiedType: const FullType(String)),
-      'statusPresensi',
+      'status_presensi',
       serializers.serialize(object.statusPresensi,
           specifiedType: const FullType(String)),
     ];
@@ -47,7 +47,7 @@ class _$PresensiResultSerializer
           result.message = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
           break;
-        case 'statusPresensi':
+        case 'status_presensi':
           result.statusPresensi = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
           break;

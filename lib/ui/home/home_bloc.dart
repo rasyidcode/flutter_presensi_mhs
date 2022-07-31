@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_expired_token_exception.dart';
@@ -14,7 +16,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   void doPresensi(String accessToken, String code) {
-    add(DoPresensi((b) => b..code = code));
+    add(DoPresensi((b) => b
+      ..code = code
+      ..accessToken = accessToken));
   }
 
   HomeBloc(this._perkuliahanRepository) : super(HomeState.initial()) {
@@ -37,7 +41,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     });
     on<DoPresensi>((event, emit) async {
-      emit(HomeState.loading(isPresensiLoading: true));
+      emit(HomeState.loading(
+          isPresensiLoading: true, matkulData: state.matkulData));
+
+      log('${(HomeBloc).toString()} - accessToken: ${event.accessToken}');
+      log('${(HomeBloc).toString()} - code: ${event.code}');
 
       try {
         final result = await _perkuliahanRepository.doPresensi(
@@ -48,16 +56,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             dataPresensi: result,
             currentCode: event.code));
       } on ApiAccessErrorException catch (e) {
-        emit(HomeState.error(e.message));
+        emit(HomeState.error(e.message,
+            currentState: 'do_presensi',
+            currentCode: event.code,
+            matkulData: state.matkulData));
       } on ApiExpiredTokenException catch (e) {
         emit(HomeState.error(e.message,
             tokenExpired: true,
             currentState: 'do_presensi',
             currentCode: event.code));
       } on RepositoryErrorException catch (e) {
-        emit(HomeState.error(e.message));
+        emit(HomeState.error(e.message,
+            currentState: 'do_presensi',
+            currentCode: event.code,
+            matkulData: state.matkulData));
       } on Exception catch (_) {
-        emit(HomeState.error('Something went wrong'));
+        emit(HomeState.error('Something went wrong',
+            currentState: 'do_presensi',
+            currentCode: event.code,
+            matkulData: state.matkulData));
       }
     });
     on<DoLogout>((event, emit) {});

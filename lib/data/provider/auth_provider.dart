@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter_presensi_mhs/data/db/presensi_app_db.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/no_auth_found_exception.dart';
@@ -10,18 +12,24 @@ class AuthProvider extends BaseProvider {
   AuthProvider(this._presensiAppDb);
 
   Future<void> updateToken(Auth authdata) async {
-    int? count = await _presensiAppDb.db?.update('auth', authdata.toMap(),
+    int? count = await (await _presensiAppDb.db)?.update(
+        'auth', authdata.toMap(),
         where: 'id = ?', whereArgs: [authdata.id]);
-    print('count updated: $count');
+    log('${(AuthProvider).toString()} - update token:$count');
   }
 
   Future<void> saveAuth(Auth authdata) async {
-    await _presensiAppDb.db?.insert('auth', authdata.toMap());
+    int? result =
+        await (await _presensiAppDb.db)?.insert('auth', authdata.toMap());
+    log('${(AuthProvider).toString()} - save auth:$result');
   }
 
   Future<Auth> getAuth() async {
-    final auth = await _presensiAppDb.db
+    final auth = await (await _presensiAppDb.db)
         ?.rawQuery('SELECT * FROM auth ORDER BY id DESC LIMIT 1');
+
+    log('${(AuthProvider).toString()} - get auth:$auth');
+
     if (auth == null) {
       throw NoAuthFoundException('Auth not found', 'null');
     }

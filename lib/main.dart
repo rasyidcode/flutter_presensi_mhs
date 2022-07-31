@@ -5,7 +5,7 @@ import 'package:flutter_presensi_mhs/ui/splash/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initKiwi();
+  await initKiwi();
   runApp(const MyApp());
 }
 

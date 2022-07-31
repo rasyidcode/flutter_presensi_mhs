@@ -15,9 +15,10 @@ class AppProvider extends BaseProvider {
   // }
 
   Future<bool> checkFirstTime() async {
-    final data = await _presensiAppDb.db
+    final data = await (await _presensiAppDb.db)
         ?.rawQuery('SELECT COUNT(*) as total FROM firstTime');
-    log('app_provider|db:${_presensiAppDb.db}');
+    log('${(AppProvider).toString()} - check first time:$data');
+
     if (data == null) {
       throw ProviderErrorException('Query returns null');
     }
@@ -36,9 +37,10 @@ class AppProvider extends BaseProvider {
   }
 
   Future<void> flagFirstTime() async {
-    await _presensiAppDb.db?.insert('firstTime', {
+    final result = await (await _presensiAppDb.db)?.insert('firstTime', {
       'firstTime': 1,
       'createdAt': DateTime.now().millisecondsSinceEpoch ~/ 1000
     });
+    log('${(AppProvider).toString()} - flag first time:$result');
   }
 }

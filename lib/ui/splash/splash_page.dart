@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,9 +65,9 @@ class _SplashPageState extends State<SplashPage> {
                   if (isFirstTime != null) {
                     if (isFirstTime) {
                       Timer(const Duration(seconds: 2), () {
-                        // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        //     builder: (_) => const WelcomePage()));
-                        print('firstTime');
+                        log('${(SplashPage).toString()} - navigate to welcome page');
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (_) => const WelcomePage()));
                       });
                     } else {
                       context.read<AuthBloc>().getAuth();
@@ -81,10 +82,12 @@ class _SplashPageState extends State<SplashPage> {
                           const Duration(seconds: 1),
                           () {
                             if (authstate.isHasAuth) {
+                              log('${(SplashPage).toString()} - navigate to home page');
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (_) => const HomePage()));
                             } else {
+                              log('${(SplashPage).toString()} - navigate to login page');
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (_) => const LoginPage()));

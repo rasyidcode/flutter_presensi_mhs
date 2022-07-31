@@ -19,17 +19,18 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
       try {
         bool isFirstTime = await _appRepository.checkFirstTime();
-        log('splash_bloc|isFirstTime:$isFirstTime', time: DateTime.now());
         emit(SplashState.success(
             isFirstTime
                 ? 'This is your first time...'
                 : 'Not your first time...',
             isFirstTime: isFirstTime,
             hideStateMsg: true));
+        log('${(SplashBloc).toString()} - is first time: $isFirstTime');
       } on ProviderErrorException catch (e) {
-        log('splash_bloc|isFirstTime:true', time: DateTime.now());
         emit(SplashState.fail(e.message, isFirstTime: true));
-      } on Exception catch (_) {
+        log('${(SplashBloc).toString()} - provider error exception: ${e.message}');
+      } on Exception catch (e) {
+        log('${(SplashBloc).toString()} - exception: $e');
         emit(SplashState.fail('Something went wrong'));
       }
     });

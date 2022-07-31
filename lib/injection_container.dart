@@ -12,11 +12,13 @@ import 'package:flutter_presensi_mhs/ui/splash/splash_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/welcome/welcome_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:kiwi/kiwi.dart';
+import 'package:sqflite/sqflite.dart';
 
-void initKiwi() {
+Future initKiwi() async {
+  String dbPath = await getDatabasesPath();
   KiwiContainer()
     ..registerInstance(http.Client())
-    ..registerFactory((container) => PresensiAppDb())
+    ..registerFactory((container) => PresensiAppDb(dbPath))
     // api
     ..registerFactory((container) => PresensiAppApi(container.resolve()))
     // provider

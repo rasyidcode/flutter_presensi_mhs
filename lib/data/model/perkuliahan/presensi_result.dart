@@ -11,6 +11,7 @@ part 'presensi_result.g.dart';
 abstract class PresensiResult
     implements Built<PresensiResult, PresensiResultBuilder> {
   String get message;
+  @BuiltValueField(wireName: 'status_presensi')
   String get statusPresensi;
 
   PresensiResult._();

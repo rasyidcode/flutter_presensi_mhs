@@ -37,62 +37,97 @@ class _MatkulItemState extends State<MatkulItem> {
     return status == 'not_started' || status == 'ongoing';
   }
 
-  Widget _buildPresensiButton(BuildContext context,
-      {required String? statusPerkuliahan}) {
-    return _isCanPresensi(statusPerkuliahan)
-        ? !isDoingPresensi
-            ? MaterialButton(
-                minWidth: 0.0,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                color: kPrimaryButtonColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                onPressed: () async {
-                  String code = await Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => const ScanPage()));
-                  log('dosen_qrcode:$code');
-                  if (!mounted) return;
-                  String? accessToken =
-                      BlocProvider.of<AuthBloc>(context).state.auth.accessToken;
-                  if (accessToken != null) {
-                    BlocProvider.of<HomeBloc>(context)
-                        .doPresensi(accessToken, code);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Access token is null'),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: const [
-                    Text(
-                      'Presensi',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                        fontSize: 12.0,
-                      ),
-                    ),
-                    SizedBox(width: 4.0),
-                    Icon(
-                      Icons.qr_code_scanner,
-                      size: 16.0,
-                    )
-                  ],
-                ),
-              )
-            : const CircularProgressIndicator()
-        : Text(
-            'Perkuliahan telah selesai',
-            style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
+  Widget _donePresensi() {
+    return const Text(
+      'Tepat Waktu',
+      style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _latePresensi() {
+    return const Text(
+      'Terlambat',
+      style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _absentPresensi() {
+    return const Text(
+      'Tidak Hadir',
+      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _presensiButton() {
+    return MaterialButton(
+      minWidth: 0.0,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      color: kPrimaryButtonColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      onPressed: () async {
+        String code = await Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const ScanPage()));
+
+        if (!mounted) return;
+
+        String? accessToken =
+            BlocProvider.of<AuthBloc>(context).state.auth.accessToken;
+        if (accessToken != null) {
+          BlocProvider.of<HomeBloc>(context).doPresensi(accessToken, code);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Access token is null'),
+            ),
           );
+        }
+      },
+      child: Row(
+        children: const [
+          Text(
+            'Presensi',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+              fontSize: 12.0,
+            ),
+          ),
+          SizedBox(width: 4.0),
+          Icon(
+            Icons.qr_code_scanner,
+            size: 16.0,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPresensiButton(BuildContext context,
+      {required String? statusPerkuliahan, required String? statusPresensi}) {
+    log('${(MatkulItem).toString()} - statusPerkuliahan: $statusPerkuliahan, statusPresensi: $statusPresensi');
+    return statusPresensi != null
+        ? (statusPresensi == 'present'
+            ? _donePresensi()
+            : statusPresensi == 'late'
+                ? _latePresensi()
+                : _absentPresensi())
+        : _isCanPresensi(statusPerkuliahan)
+            ? !isDoingPresensi
+                ? _presensiButton()
+                : const CircularProgressIndicator()
+            : _absentPresensi();
+  }
+
+  String circleAvatarText(String matkulName) {
+    List<String> texts = matkulName.split(' ');
+    String result = '';
+    for (var item in texts) {
+      result += item[0];
+    }
+
+    return result;
   }
 
   @override
@@ -103,16 +138,16 @@ class _MatkulItemState extends State<MatkulItem> {
             builder: (BuildContext context) => const DetailPage()));
       },
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.only(bottom: 16.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               backgroundColor: kPrimaryColor,
               radius: 24.0,
               child: Text(
-                'PP',
-                style: TextStyle(
+                circleAvatarText(widget.perkuliahanItem?.matkul ?? 'PP'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -220,6 +255,8 @@ class _MatkulItemState extends State<MatkulItem> {
                         ),
                       ),
                       _buildPresensiButton(context,
+                          statusPresensi:
+                              widget.perkuliahanItem?.statusPresensi,
                           statusPerkuliahan:
                               widget.perkuliahanItem?.statusPerkuliahan)
                     ],

@@ -10,7 +10,7 @@ class _$HomeState extends HomeState {
   @override
   final String error;
   @override
-  final bool isLoading;
+  final bool? isLoading;
   @override
   final bool? isPresensiLoading;
   @override
@@ -33,7 +33,7 @@ class _$HomeState extends HomeState {
 
   _$HomeState._(
       {required this.error,
-      required this.isLoading,
+      this.isLoading,
       this.isPresensiLoading,
       this.isPresensiSuccess,
       required this.matkulData,
@@ -44,7 +44,6 @@ class _$HomeState extends HomeState {
       this.currentCode})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(error, 'HomeState', 'error');
-    BuiltValueNullFieldError.checkNotNull(isLoading, 'HomeState', 'isLoading');
     BuiltValueNullFieldError.checkNotNull(
         matkulData, 'HomeState', 'matkulData');
   }
@@ -200,8 +199,7 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
           new _$HomeState._(
               error: BuiltValueNullFieldError.checkNotNull(
                   error, 'HomeState', 'error'),
-              isLoading: BuiltValueNullFieldError.checkNotNull(
-                  isLoading, 'HomeState', 'isLoading'),
+              isLoading: isLoading,
               isPresensiLoading: isPresensiLoading,
               isPresensiSuccess: isPresensiSuccess,
               matkulData: matkulData.build(),

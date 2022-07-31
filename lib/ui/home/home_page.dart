@@ -71,8 +71,9 @@ class _HomePageState extends State<HomePage> {
                 } else if (currentState == 'do_presensi') {
                   String? code =
                       BlocProvider.of<HomeBloc>(context).state.currentCode;
-                  log('home_page:$code');
                   if (code != null) {
+                    log('${(HomePage).toString()} - accessToken: $accessToken');
+                    log('${(HomePage).toString()} - code: $code');
                     BlocProvider.of<HomeBloc>(context)
                         .doPresensi(accessToken, code);
                   }
@@ -111,60 +112,67 @@ class _HomePageState extends State<HomePage> {
                   BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
                 }
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: BlocConsumer<HomeBloc, HomeState>(
-                  listener: (context, homestate) {
-                    bool? isTokenExpired = homestate.isTokenExpired;
-                    if (isTokenExpired != null && isTokenExpired) {
-                      if (authstate.isHasAuth) {
-                        BlocProvider.of<AuthBloc>(context)
-                            .renewToken(authstate.auth);
-                      }
+              child: BlocConsumer<HomeBloc, HomeState>(
+                listener: (context, homestate) {
+                  bool? isTokenExpired = homestate.isTokenExpired;
+                  if (isTokenExpired != null && isTokenExpired) {
+                    if (authstate.isHasAuth) {
+                      BlocProvider.of<AuthBloc>(context)
+                          .renewToken(authstate.auth);
                     }
-                  },
-                  builder: (context, homestate) {
-                    if (homestate.isLoading || authstate.isLoading) {
+                  }
+
+                  if (homestate.isError &&
+                      homestate.currentState == 'do_presensi') {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(homestate.error)));
+                  }
+                },
+                builder: (context, homestate) {
+                  bool? isLoading = homestate.isLoading;
+                  if (isLoading != null) {
+                    if (isLoading || authstate.isLoading) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
+                  }
 
-                    bool? isTokenExpired = homestate.isTokenExpired;
-                    if (homestate.isError && isTokenExpired == null) {
+                  bool? isTokenExpired = homestate.isTokenExpired;
+                  if (homestate.isError && isTokenExpired == null) {
+                    if (homestate.currentState == 'get_list_matkul') {
                       return Center(child: Text(homestate.error));
                     }
+                  }
 
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Perkuliahan Hari Ini',
-                            style: Theme.of(context).textTheme.headline6,
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Perkuliahan Hari Ini',
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        Text(
+                          BlocProvider.of<HomeBloc>(context).getCurrentDate(),
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                        const Divider(),
+                        Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: homestate.matkulData.length,
+                            itemBuilder: (context, index) {
+                              return MatkulItem(
+                                  perkuliahanItem: homestate.matkulData[index]);
+                            },
                           ),
-                          Text(
-                            BlocProvider.of<HomeBloc>(context).getCurrentDate(),
-                            style: Theme.of(context).textTheme.bodyText2,
-                          ),
-                          const Divider(),
-                          Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: homestate.matkulData.length,
-                              itemBuilder: (context, index) {
-                                return MatkulItem(
-                                    perkuliahanItem:
-                                        homestate.matkulData[index]);
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        )
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
             floatingActionButton: FloatingActionButton(
