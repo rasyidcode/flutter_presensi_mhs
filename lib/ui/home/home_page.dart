@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
         listener: (context, authstate) {
           String? currentState =
               BlocProvider.of<HomeBloc>(context).state.currentState;
-
           if (authstate.isHasAuth) {
             bool? isDoneGetAuth = authstate.isDoneGetAuth;
             if (isDoneGetAuth != null && isDoneGetAuth) {
@@ -74,9 +73,6 @@ class _HomePageState extends State<HomePage> {
                   String? idJadwal =
                       BlocProvider.of<HomeBloc>(context).state.currentIdJadwal;
                   if (code != null && idJadwal != null) {
-                    log('${(HomePage).toString()} - accessToken: $accessToken');
-                    log('${(HomePage).toString()} - code: $code');
-                    log('${(HomePage).toString()} - idJadwal: $idJadwal');
                     BlocProvider.of<HomeBloc>(context)
                         .doPresensi(accessToken, code, idJadwal);
                   }

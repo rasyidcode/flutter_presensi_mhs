@@ -77,10 +77,6 @@ class _MatkulItemState extends State<MatkulItem> {
         String? idJadwal = widget.perkuliahanItem?.id;
 
         if (accessToken != null && idJadwal != null) {
-          log('${(MatkulItem).toString()} - accessToken: $accessToken');
-          log('${(MatkulItem).toString()} - code: $code');
-          log('${(MatkulItem).toString()} - idJadwal: $idJadwal');
-
           BlocProvider.of<HomeBloc>(context)
               .doPresensi(accessToken, code, idJadwal);
         } else {

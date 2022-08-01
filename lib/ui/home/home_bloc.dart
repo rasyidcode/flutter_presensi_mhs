@@ -31,14 +31,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             await _perkuliahanRepository.getListMatkul(event.accessToken);
         emit(HomeState.success(data: result.data, totalData: result.total));
       } on ApiAccessErrorException catch (e) {
-        emit(HomeState.error(e.message));
+        emit(HomeState.error(e.message, currentState: 'get_list_matkul'));
       } on ApiExpiredTokenException catch (e) {
         emit(HomeState.error(e.message,
             tokenExpired: true, currentState: 'get_list_matkul'));
       } on RepositoryErrorException catch (e) {
-        emit(HomeState.error(e.message));
+        emit(HomeState.error(e.message, currentState: 'get_list_matkul'));
       } on Exception catch (_) {
-        emit(HomeState.error('Something went wrong'));
+        emit(HomeState.error('Something went wrong',
+            currentState: 'get_list_matkul'));
       }
     });
     on<DoPresensi>((event, emit) async {
