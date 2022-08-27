@@ -132,6 +132,7 @@ class PresensiAppApi {
     return PerkuliahanItem.fromJson(response.body);
   }
 
+  // do presensi
   Future<PresensiResult?> doPresensi(
       {required String accessToken,
       required String qrcode,
