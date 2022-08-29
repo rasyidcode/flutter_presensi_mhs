@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,7 +6,6 @@ import 'package:flutter_presensi_mhs/data/model/perkuliahan/perkuliahan_item.dar
 import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/detail/detail_page.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
-import 'package:flutter_presensi_mhs/ui/scan/scan_page.dart';
 
 class MatkulItem extends StatefulWidget {
   final PerkuliahanItem? perkuliahanItem;
@@ -33,30 +30,30 @@ class _MatkulItemState extends State<MatkulItem> {
     super.dispose();
   }
 
-  bool _isCanPresensi(String? status) {
-    return status == 'not_started' || status == 'ongoing';
-  }
+  // bool _isCanPresensi(String? status) {
+  //   return status == 'not_started' || status == 'ongoing';
+  // }
 
-  Widget _donePresensi() {
-    return const Text(
-      'Tepat Waktu',
-      style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-    );
-  }
+  // Widget _donePresensi() {
+  //   return const Text(
+  //     'Tepat Waktu',
+  //     style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+  //   );
+  // }
 
-  Widget _latePresensi() {
-    return const Text(
-      'Terlambat',
-      style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-    );
-  }
+  // Widget _latePresensi() {
+  //   return const Text(
+  //     'Terlambat',
+  //     style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+  //   );
+  // }
 
-  Widget _absentPresensi() {
-    return const Text(
-      'Tidak Hadir',
-      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-    );
-  }
+  // Widget _absentPresensi() {
+  //   return const Text(
+  //     'Tidak Hadir',
+  //     style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+  //   );
+  // }
 
   Widget _presensiButton() {
     return MaterialButton(
@@ -67,22 +64,17 @@ class _MatkulItemState extends State<MatkulItem> {
         borderRadius: BorderRadius.circular(20.0),
       ),
       onPressed: () async {
-        String code = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const ScanPage()));
-
-        if (!mounted) return;
-
         String? accessToken =
             BlocProvider.of<AuthBloc>(context).state.auth.accessToken;
         String? idJadwal = widget.perkuliahanItem?.id;
 
         if (accessToken != null && idJadwal != null) {
           BlocProvider.of<HomeBloc>(context)
-              .doPresensi(accessToken, code, idJadwal);
+              .checkPerkuliahan(accessToken, idJadwal);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access token is null'),
+              content: Text('Something went wrong! code: #matkul_item'),
             ),
           );
         }
@@ -107,21 +99,25 @@ class _MatkulItemState extends State<MatkulItem> {
     );
   }
 
-  Widget _buildPresensiButton(BuildContext context,
-      {required String? statusPerkuliahan, required String? statusPresensi}) {
-    log('${(MatkulItem).toString()} - statusPerkuliahan: $statusPerkuliahan, statusPresensi: $statusPresensi');
-    return statusPresensi != null
-        ? (statusPresensi == 'present'
-            ? _donePresensi()
-            : statusPresensi == 'late'
-                ? _latePresensi()
-                : _absentPresensi())
-        : _isCanPresensi(statusPerkuliahan)
-            ? !isDoingPresensi
-                ? _presensiButton()
-                : const CircularProgressIndicator()
-            : _absentPresensi();
-  }
+  // Widget _buildPresensiButton(BuildContext context,
+  //     {required String? statusPerkuliahan, required String? statusPresensi}) {
+  //   log('${(MatkulItem).toString()} - statusPerkuliahan: $statusPerkuliahan, statusPresensi: $statusPresensi');
+  //   return statusPresensi != null
+  //       ? (statusPresensi == 'present'
+  //           ? _donePresensi()
+  //           : statusPresensi == 'late'
+  //               ? _latePresensi()
+  //               : _absentPresensi())
+  //       : _isCanPresensi(statusPerkuliahan)
+  //           ? !isDoingPresensi
+  //               ? _presensiButton()
+  //               : const CircularProgressIndicator()
+  //           : _absentPresensi();
+  // }
+
+  // Widget _buildPresensiButton() {
+  //   return _presensiButton();
+  // }
 
   String circleAvatarText(String matkulName) {
     List<String> texts = matkulName.split(' ');
@@ -257,11 +253,12 @@ class _MatkulItemState extends State<MatkulItem> {
                           ],
                         ),
                       ),
-                      _buildPresensiButton(context,
-                          statusPresensi:
-                              widget.perkuliahanItem?.statusPresensi,
-                          statusPerkuliahan:
-                              widget.perkuliahanItem?.statusPerkuliahan)
+                      // _buildPresensiButton(context,
+                      //     statusPresensi:
+                      //         widget.perkuliahanItem?.statusPresensi,
+                      //     statusPerkuliahan:
+                      //         widget.perkuliahanItem?.statusPerkuliahan)
+                      _presensiButton()
                     ],
                   )
                 ],

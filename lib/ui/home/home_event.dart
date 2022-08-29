@@ -28,3 +28,14 @@ abstract class DoPresensi extends HomeEvent
 }
 
 class DoLogout extends HomeEvent {}
+
+abstract class CheckPerkuliahan extends HomeEvent
+    implements Built<CheckPerkuliahan, CheckPerkuliahanBuilder> {
+  String get accessToken;
+  String get idJadwal;
+
+  CheckPerkuliahan._();
+
+  factory CheckPerkuliahan([Function(CheckPerkuliahanBuilder b) updates]) =
+      _$CheckPerkuliahan;
+}

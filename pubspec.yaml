@@ -38,7 +38,7 @@ dependencies:
   built_collection: ^5.1.1
   kiwi: ^4.0.2
   http: ^0.13.4
-  flutter_bloc: ^8.0.1
+  flutter_bloc: ^8.1.1
   qr_code_scanner: ^1.0.0
   sqflite: ^2.0.2+1
   jwt_decode: ^0.3.1

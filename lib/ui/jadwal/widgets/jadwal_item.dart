@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/ui/jadwal/widgets/matkul_item.dart';
 
 class JadwalItem extends StatelessWidget {

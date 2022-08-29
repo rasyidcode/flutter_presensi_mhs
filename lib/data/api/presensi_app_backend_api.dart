@@ -128,7 +128,6 @@ class PresensiAppApi {
       }
     }
 
-    log('${(PresensiAppApi).toString()} - response body: ${response.body}');
     return PerkuliahanItem.fromJson(response.body);
   }
 
@@ -158,7 +157,33 @@ class PresensiAppApi {
       }
     }
 
-    log('${(PresensiAppApi).toString()} - response body: ${response.body}');
     return PresensiResult.fromJson(response.body);
+  }
+
+  Future<String?> checkPerkuliahan(
+      {required String accessToken, required String idJadwal}) async {
+    final response = await _client
+        .post(Uri.parse(baseApiURL + '/perkuliahan/check'), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $accessToken'
+    }, body: {
+      'id_jadwal': idJadwal,
+    });
+
+    if (response.statusCode != 200) {
+      if (response.statusCode == 401) {
+        String? decoded = jsonDecode(response.body)['message'];
+        if (decoded == null) {
+          throw ApiAccessErrorException('Message param doesnt exist');
+        }
+
+        if (decoded.contains('Expired token')) {
+          throw ApiExpiredTokenException('Token is expired');
+        }
+      } else {
+        throw ApiAccessErrorException(jsonDecode(response.body)['message']);
+      }
+    }
+
+    return jsonDecode(response.body)['message'];
   }
 }

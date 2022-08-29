@@ -35,4 +35,15 @@ class PerkuliahanRepository {
   }
 
   // get detail perkuliahan
+
+  // check perkuliahan
+  Future<String?> checkPerkuliahan(String accessToken, String idJadwal) async {
+    final result = await _presensiAppApi.checkPerkuliahan(
+        accessToken: accessToken, idJadwal: idJadwal);
+    if (result == null) {
+      throw RepositoryErrorException('Result retuns null');
+    }
+
+    return result;
+  }
 }

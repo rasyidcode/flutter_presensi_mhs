@@ -9,7 +9,6 @@ import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_page.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:flutter_presensi_mhs/ui/splash/splash_bloc.dart';
-import 'package:flutter_presensi_mhs/ui/splash/splash_event.dart';
 import 'package:flutter_presensi_mhs/ui/splash/splash_state.dart';
 import 'package:flutter_presensi_mhs/ui/welcome/welcome_page.dart';
 import 'package:kiwi/kiwi.dart';

@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/api_access_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/no_auth_found_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/repository_error_exception.dart';
-import 'package:flutter_presensi_mhs/data/model/auth/auth.dart' as api;
 import 'package:flutter_presensi_mhs/data/model/local/auth.dart' as local;
 import 'package:flutter_presensi_mhs/data/repository/auth_repository.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_event.dart';

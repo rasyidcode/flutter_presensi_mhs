@@ -26,6 +26,8 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
   String? get currentState;
   String? get currentCode;
   String? get currentIdJadwal;
+  bool? get isSuccessCheckPresensi;
+  bool? get isDoneCheckPresensi;
 
   HomeState._();
 
@@ -46,6 +48,7 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
   factory HomeState.loading(
       {bool? isLoading,
       bool? isPresensiLoading,
+      bool? isDoneCheckPresensi,
       BuiltList<PerkuliahanItem?>? matkulData}) {
     return HomeState(
       (b) => b
@@ -55,7 +58,8 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
         ..matkulData.replace(matkulData ?? BuiltList<PerkuliahanItem>())
         ..presensiResult.replace(PresensiResult((b) => b
           ..message = ''
-          ..statusPresensi = '')),
+          ..statusPresensi = ''))
+        ..isDoneCheckPresensi = isDoneCheckPresensi,
     );
   }
 
@@ -64,7 +68,9 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       String? currentState,
       String? currentCode,
       BuiltList<PerkuliahanItem?>? matkulData,
-      String? idJadwal}) {
+      String? idJadwal,
+      bool? isSuccessCheckPresensi,
+      bool? isDoneCheckPresensi}) {
     return HomeState(
       (b) => b
         ..error = error
@@ -76,7 +82,9 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
         ..matkulData.replace(matkulData ?? BuiltList<PerkuliahanItem>())
         ..presensiResult.replace(PresensiResult((b) => b
           ..message = ''
-          ..statusPresensi = '')),
+          ..statusPresensi = ''))
+        ..isSuccessCheckPresensi = isSuccessCheckPresensi
+        ..isDoneCheckPresensi = isDoneCheckPresensi,
     );
   }
 
@@ -86,20 +94,22 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
       bool? isPresensiLoading,
       PresensiResult? dataPresensi,
       String? currentCode,
-      String? idJadwal}) {
-    return HomeState(
-      (b) => b
-        ..error = ''
-        ..isLoading = false
-        ..matkulTotal = totalData
-        ..isPresensiLoading = isPresensiLoading
-        ..currentCode = currentCode
-        ..currentIdJadwal = idJadwal
-        ..matkulData.replace(data ?? BuiltList<PerkuliahanItem>())
-        ..presensiResult.replace(dataPresensi ??
-            PresensiResult((b) => b
-              ..message = ''
-              ..statusPresensi = '')),
-    );
+      String? idJadwal,
+      bool? isSuccessCheckPresensi,
+      bool? isDoneCheckPresensi}) {
+    return HomeState((b) => b
+      ..error = ''
+      ..isLoading = false
+      ..matkulTotal = totalData
+      ..isPresensiLoading = isPresensiLoading
+      ..currentCode = currentCode
+      ..currentIdJadwal = idJadwal
+      ..matkulData.replace(data ?? BuiltList<PerkuliahanItem>())
+      ..presensiResult.replace(dataPresensi ??
+          PresensiResult((b) => b
+            ..message = ''
+            ..statusPresensi = ''))
+      ..isSuccessCheckPresensi = isSuccessCheckPresensi
+      ..isDoneCheckPresensi = isDoneCheckPresensi);
   }
 }

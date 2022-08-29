@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter_presensi_mhs/data/db/presensi_app_db.dart';
-import 'package:flutter_presensi_mhs/data/exceptions/first_time_exception.dart';
 import 'package:flutter_presensi_mhs/data/exceptions/provider_error_exception.dart';
 import 'package:flutter_presensi_mhs/data/provider/base_provider.dart';
 

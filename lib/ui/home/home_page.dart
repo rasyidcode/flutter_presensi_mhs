@@ -1,14 +1,9 @@
-import 'dart:async';
-import 'dart:developer';
-
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
-import 'package:flutter_presensi_mhs/ui/home/home_event.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/home_drawer.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/matkul_item.dart';
@@ -112,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                 }
               },
               child: BlocConsumer<HomeBloc, HomeState>(
-                listener: (context, homestate) {
+                listener: (context, homestate) async {
                   bool? isTokenExpired = homestate.isTokenExpired;
                   if (isTokenExpired != null && isTokenExpired) {
                     if (authstate.isHasAuth) {
@@ -125,6 +120,36 @@ class _HomePageState extends State<HomePage> {
                       homestate.currentState == 'do_presensi') {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text(homestate.error)));
+                  }
+
+                  bool? isSuccessCheckPresensi =
+                      BlocProvider.of<HomeBloc>(context)
+                          .state
+                          .isSuccessCheckPresensi;
+                  if (isSuccessCheckPresensi != null) {
+                    if (!isSuccessCheckPresensi) {
+                      String error = homestate.error;
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text(error)));
+                    } else {
+                      String? accessToken = authstate.auth.accessToken;
+                      String? idJadwal = homestate.currentIdJadwal;
+                      if (accessToken != null && idJadwal != null) {
+                        String code = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => const ScanPage()));
+
+                        if (!mounted) return;
+
+                        BlocProvider.of<HomeBloc>(context)
+                            .doPresensi(accessToken, code, idJadwal);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Something went wrong! code: #home_page')));
+                      }
+                    }
                   }
                 },
                 builder: (context, homestate) {
