@@ -96,10 +96,12 @@ class _SplashPageState extends State<SplashPage> {
                       }
                     },
                     builder: (context, authstate) {
+                      bool? isLoadingAuth = authstate.isLoading;
                       return Column(
                         children: [
                           const SizedBox(height: 20.0),
-                          splashstate.isLoading || authstate.isLoading
+                          splashstate.isLoading ||
+                                  (isLoadingAuth != null && isLoadingAuth)
                               ? const CircularProgressIndicator(
                                   color: kPrimaryButtonColor)
                               : Container(),

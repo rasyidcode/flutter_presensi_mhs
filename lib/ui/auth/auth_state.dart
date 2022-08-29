@@ -7,12 +7,12 @@ part 'auth_state.g.dart';
 
 abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
   Auth get auth;
-  bool get isLoading;
+  bool? get isLoading;
   String get error;
   bool get isReadyToNavigate;
   String? get stateMessage;
 
-  bool get isHasAuth => isAuthNotNull && !isLoading && error == '';
+  bool get isHasAuth => isAuthNotNull && error == '';
 
   bool get isAuthNotNull =>
       auth.id != 0 &&
@@ -22,6 +22,8 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
 
   bool? get isDoneGetAuth;
   bool? get isDoneRenewToken;
+  bool? get isSuccessLogout;
+  bool? get isLoadingLogout;
   bool get isError => error.isNotEmpty;
 
   AuthState._();
@@ -44,13 +46,15 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
     );
   }
 
-  factory AuthState.loading({String? stateMsg}) {
+  factory AuthState.loading(
+      {String? stateMsg, bool? isLoading, bool? isLoadingLogout}) {
     return AuthState(
       (b) => b
-        ..isLoading = true
+        ..isLoading = isLoading
         ..error = ''
         ..isReadyToNavigate = false
         ..stateMessage = stateMsg
+        ..isLoadingLogout = isLoadingLogout
         ..auth.replace(
           Auth((b) => b
             ..accessToken = ''
@@ -61,27 +65,37 @@ abstract class AuthState implements Built<AuthState, AuthStateBuilder> {
     );
   }
 
-  factory AuthState.success(Auth auth,
-      {String? stateMsg, bool? isDoneGetAuth, bool? isDoneRenewToken}) {
+  factory AuthState.success(
+    Auth auth, {
+    String? stateMsg,
+    bool? isDoneGetAuth,
+    bool? isDoneRenewToken,
+    bool? isSuccessLogout,
+  }) {
     return AuthState(
       (b) => b
         ..isLoading = false
+        ..isLoadingLogout = false
         ..error = ''
         ..stateMessage = stateMsg
         ..isDoneGetAuth = isDoneGetAuth
         ..isDoneRenewToken = isDoneRenewToken
+        ..isSuccessLogout = isSuccessLogout
         ..isReadyToNavigate = true
         ..auth.replace(auth),
     );
   }
 
-  factory AuthState.fail(String error, {String? stateMsg}) {
+  factory AuthState.fail(String error,
+      {String? stateMsg, bool? isSuccessLogout}) {
     return AuthState(
       (b) => b
         ..isLoading = false
+        ..isLoadingLogout = false
         ..error = error
         ..isReadyToNavigate = true
         ..stateMessage = stateMsg
+        ..isSuccessLogout = isSuccessLogout
         ..auth.replace(Auth((b) => b
           ..accessToken = ''
           ..refreshToken = ''

@@ -18,6 +18,10 @@ class AuthProvider extends BaseProvider {
     log('${(AuthProvider).toString()} - update token:$count');
   }
 
+  Future<void> removeAuth() async {
+    await (await _presensiAppDb.db)?.rawDelete('DELETE FROM auth');
+  }
+
   Future<void> saveAuth(Auth authdata) async {
     int? result =
         await (await _presensiAppDb.db)?.insert('auth', authdata.toMap());

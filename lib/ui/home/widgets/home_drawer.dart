@@ -1,15 +1,21 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
+import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
+import 'package:kiwi/kiwi.dart';
+import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 
 class HomeDrawer extends StatelessWidget {
-  final DrawerData data;
-
-  const HomeDrawer({Key? key, required this.data}) : super(key: key);
+  const HomeDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    AuthBloc _authBloc = KiwiContainer().resolve<AuthBloc>();
+    String? accessToken = _authBloc.state.auth.accessToken;
+    DrawerData _data =
+        accessToken != null ? accessToken.jwtDecode() : DrawerData('', '');
     return Drawer(
       child: Container(
         color: kPrimaryColor,
@@ -37,14 +43,14 @@ class HomeDrawer extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '${data.name}\n',
+                              text: '${_data.name}\n',
                               style: const TextStyle(
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
-                              text: data.id,
+                              text: _data.id,
                               style: const TextStyle(
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.w300,
@@ -62,9 +68,7 @@ class HomeDrawer extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  if (kDebugMode) {
-                    print('home');
-                  }
+                  // todo: check if right now in home_page, if yes just close the drawer, if no navigate to home_page
                 },
                 child: const ListTile(
                   leading: Icon(Icons.home, color: Colors.white),
@@ -81,17 +85,26 @@ class HomeDrawer extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  if (kDebugMode) {
-                    print('Logout');
-                  }
+                  _authBloc.logout(_authBloc.state.auth);
                 },
-                child: const ListTile(
-                  leading: Icon(Icons.logout, color: Colors.white),
-                  title: Text(
+                child: ListTile(
+                  leading: const Icon(Icons.logout, color: Colors.white),
+                  title: const Text(
                     'Logout',
                     style: TextStyle(
                       color: Colors.white,
                     ),
+                  ),
+                  trailing: BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      bool? isLoadingLogout = state.isLoadingLogout;
+                      if (isLoadingLogout != null && isLoadingLogout) {
+                        return const CircularProgressIndicator(
+                            color: kPrimaryButtonColor);
+                      }
+
+                      return Container();
+                    },
                   ),
                 ),
               ),

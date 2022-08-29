@@ -17,3 +17,13 @@ abstract class RenewToken extends AuthEvent
 
   factory RenewToken([Function(RenewTokenBuilder b) updates]) = _$RenewToken;
 }
+
+abstract class DoLogout extends AuthEvent
+    implements Built<DoLogout, DoLogoutBuilder> {
+  String get accessToken;
+  String get refreshToken;
+
+  DoLogout._();
+
+  factory DoLogout([Function(DoLogoutBuilder b) updates]) = _$DoLogout;
+}

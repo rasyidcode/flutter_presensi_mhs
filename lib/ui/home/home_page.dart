@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
@@ -10,7 +12,6 @@ import 'package:flutter_presensi_mhs/ui/home/widgets/matkul_item.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:flutter_presensi_mhs/ui/scan/scan_page.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -38,54 +39,110 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthState authstate = _authBloc.state;
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (_) => _authBloc),
         BlocProvider<HomeBloc>(create: (_) => _homeBloc)
       ],
-      child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, authstate) {
-          String? currentState =
-              BlocProvider.of<HomeBloc>(context).state.currentState;
-          if (authstate.isHasAuth) {
-            bool? isDoneGetAuth = authstate.isDoneGetAuth;
-            if (isDoneGetAuth != null && isDoneGetAuth) {
-              String? accessToken = authstate.auth.accessToken;
-              if (accessToken != null) {
-                BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
-              }
-            }
-
-            bool? isDoneRenewToken = authstate.isDoneRenewToken;
-            if (isDoneRenewToken != null && isDoneRenewToken) {
-              String? accessToken = authstate.auth.accessToken;
-              if (accessToken != null && currentState != null) {
-                if (currentState == 'get_list_matkul') {
-                  BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
-                } else if (currentState == 'do_presensi') {
-                  String? code =
-                      BlocProvider.of<HomeBloc>(context).state.currentCode;
-                  String? idJadwal =
-                      BlocProvider.of<HomeBloc>(context).state.currentIdJadwal;
-                  if (code != null && idJadwal != null) {
+      child: MultiBlocListener(
+          listeners: [
+            BlocListener<AuthBloc, AuthState>(listener: (context, state) {
+              String? currentState =
+                  BlocProvider.of<HomeBloc>(context).state.currentState;
+              if (state.isHasAuth) {
+                bool? isDoneGetAuth = state.isDoneGetAuth;
+                if (isDoneGetAuth != null && isDoneGetAuth) {
+                  String? accessToken = state.auth.accessToken;
+                  if (accessToken != null) {
                     BlocProvider.of<HomeBloc>(context)
-                        .doPresensi(accessToken, code, idJadwal);
+                        .getListMatkul(accessToken);
+                  }
+                }
+
+                bool? isDoneRenewToken = state.isDoneRenewToken;
+                if (isDoneRenewToken != null && isDoneRenewToken) {
+                  String? accessToken = state.auth.accessToken;
+                  if (accessToken != null && currentState != null) {
+                    if (currentState == 'get_list_matkul') {
+                      BlocProvider.of<HomeBloc>(context)
+                          .getListMatkul(accessToken);
+                    } else if (currentState == 'do_presensi') {
+                      String? code =
+                          BlocProvider.of<HomeBloc>(context).state.currentCode;
+                      String? idJadwal = BlocProvider.of<HomeBloc>(context)
+                          .state
+                          .currentIdJadwal;
+                      if (code != null && idJadwal != null) {
+                        BlocProvider.of<HomeBloc>(context)
+                            .doPresensi(accessToken, code, idJadwal);
+                      }
+                    }
                   }
                 }
               }
-            }
-          }
 
-          if (authstate.isError && currentState == 'get_list_matkul') {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(authstate.error)));
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const LoginPage()));
-          }
-        },
-        builder: (context, authstate) {
-          String? accessToken = authstate.auth.accessToken;
-          return Scaffold(
+              if (state.isError && currentState == 'get_list_matkul') {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(state.error)));
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const LoginPage()));
+              }
+
+              bool? isSuccessLogout = state.isSuccessLogout;
+              if (isSuccessLogout != null) {
+                if (!isSuccessLogout) {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(state.error)));
+                } else {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const LoginPage()));
+                }
+              }
+            }),
+            BlocListener<HomeBloc, HomeState>(listener: (context, state) async {
+              bool? isTokenExpired = state.isTokenExpired;
+              if (isTokenExpired != null && isTokenExpired) {
+                if (authstate.isHasAuth) {
+                  BlocProvider.of<AuthBloc>(context).renewToken(authstate.auth);
+                }
+              }
+
+              if (state.isError && state.currentState == 'do_presensi') {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(state.error)));
+              }
+
+              bool? isSuccessCheckPresensi = BlocProvider.of<HomeBloc>(context)
+                  .state
+                  .isSuccessCheckPresensi;
+              if (isSuccessCheckPresensi != null) {
+                if (!isSuccessCheckPresensi) {
+                  String error = state.error;
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(error)));
+                } else {
+                  String? accessToken = authstate.auth.accessToken;
+                  String? idJadwal = state.currentIdJadwal;
+                  if (accessToken != null && idJadwal != null) {
+                    String code = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const ScanPage()));
+
+                    if (!mounted) return;
+
+                    BlocProvider.of<HomeBloc>(context)
+                        .doPresensi(accessToken, code, idJadwal);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text('Something went wrong! code: #home_page')));
+                  }
+                }
+              }
+            }),
+          ],
+          child: Scaffold(
             appBar: AppBar(
               backgroundColor: kPrimaryColor,
               title: const Text(
@@ -96,107 +153,61 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             backgroundColor: Colors.white,
-            drawer: authstate.isHasAuth && accessToken != null
-                ? HomeDrawer(data: accessToken.jwtDecode())
-                : Container(),
+            drawer: const HomeDrawer(),
             body: RefreshIndicator(
               onRefresh: () async {
                 String? accessToken = authstate.auth.accessToken;
                 if (accessToken != null) {
-                  BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
+                  _homeBloc.getListMatkul(accessToken);
                 }
               },
-              child: BlocConsumer<HomeBloc, HomeState>(
-                listener: (context, homestate) async {
-                  bool? isTokenExpired = homestate.isTokenExpired;
-                  if (isTokenExpired != null && isTokenExpired) {
-                    if (authstate.isHasAuth) {
-                      BlocProvider.of<AuthBloc>(context)
-                          .renewToken(authstate.auth);
-                    }
-                  }
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Perkuliahan Hari Ini',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    Text(
+                      _getCurrentDate(),
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    const Divider(),
+                    Expanded(
+                      child: BlocBuilder<HomeBloc, HomeState>(
+                        builder: (context, state) {
+                          bool? isLoading = state.isLoading;
+                          bool? isLoadingAuth = authstate.isLoading;
+                          if (isLoading != null && isLoadingAuth != null) {
+                            if (isLoading || isLoadingAuth) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }
 
-                  if (homestate.isError &&
-                      homestate.currentState == 'do_presensi') {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(homestate.error)));
-                  }
-
-                  bool? isSuccessCheckPresensi =
-                      BlocProvider.of<HomeBloc>(context)
-                          .state
-                          .isSuccessCheckPresensi;
-                  if (isSuccessCheckPresensi != null) {
-                    if (!isSuccessCheckPresensi) {
-                      String error = homestate.error;
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(error)));
-                    } else {
-                      String? accessToken = authstate.auth.accessToken;
-                      String? idJadwal = homestate.currentIdJadwal;
-                      if (accessToken != null && idJadwal != null) {
-                        String code = await Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => const ScanPage()));
-
-                        if (!mounted) return;
-
-                        BlocProvider.of<HomeBloc>(context)
-                            .doPresensi(accessToken, code, idJadwal);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Something went wrong! code: #home_page')));
-                      }
-                    }
-                  }
-                },
-                builder: (context, homestate) {
-                  bool? isLoading = homestate.isLoading;
-                  if (isLoading != null) {
-                    if (isLoading || authstate.isLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  }
-
-                  bool? isTokenExpired = homestate.isTokenExpired;
-                  if (homestate.isError && isTokenExpired == null) {
-                    if (homestate.currentState == 'get_list_matkul') {
-                      return Center(child: Text(homestate.error));
-                    }
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Perkuliahan Hari Ini',
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                        Text(
-                          BlocProvider.of<HomeBloc>(context).getCurrentDate(),
-                          style: Theme.of(context).textTheme.bodyText2,
-                        ),
-                        const Divider(),
-                        Expanded(
-                          child: ListView.builder(
+                          bool? isTokenExpired = state.isTokenExpired;
+                          if (state.isError && isTokenExpired == null) {
+                            if (state.currentState == 'get_list_matkul') {
+                              return Center(child: Text(state.error));
+                            }
+                          }
+                          log('matkul data length: ${state.matkulData.length}');
+                          return ListView.builder(
                             shrinkWrap: true,
-                            itemCount: homestate.matkulData.length,
+                            itemCount: state.matkulData.length,
                             itemBuilder: (context, index) {
                               return MatkulItem(
-                                  perkuliahanItem: homestate.matkulData[index]);
+                                  perkuliahanItem: state.matkulData[index]);
                             },
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                },
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             floatingActionButton: FloatingActionButton(
@@ -209,9 +220,79 @@ class _HomePageState extends State<HomePage> {
               child: const Icon(Icons.refresh),
               backgroundColor: kPrimaryColor,
             ),
-          );
-        },
-      ),
+          )),
     );
+  }
+
+  String _getCurrentDate() {
+    var now = DateTime.now();
+    var month = '';
+    switch (now.month) {
+      case 1:
+        month = 'Januari';
+        break;
+      case 2:
+        month = 'Februari';
+        break;
+      case 3:
+        month = 'Maret';
+        break;
+      case 4:
+        month = 'April';
+        break;
+      case 5:
+        month = 'Mei';
+        break;
+      case 6:
+        month = 'Juni';
+        break;
+      case 7:
+        month = 'Juli';
+        break;
+      case 8:
+        month = 'Agustus';
+        break;
+      case 9:
+        month = 'September';
+        break;
+      case 10:
+        month = 'Oktober';
+        break;
+      case 11:
+        month = 'November';
+        break;
+      case 12:
+        month = 'Desember';
+        break;
+      default:
+        month = 'undefined';
+        break;
+    }
+
+    var day = '';
+    switch (now.weekday) {
+      case 1:
+        day = 'Senin';
+        break;
+      case 2:
+        day = 'Selasa';
+        break;
+      case 3:
+        day = 'Rabu';
+        break;
+      case 4:
+        day = 'Kamis';
+        break;
+      case 5:
+        day = 'Jum\'at';
+        break;
+      case 6:
+        day = 'Sabtu';
+        break;
+      case 7:
+        day = 'Minggu';
+        break;
+    }
+    return '$day, ${now.day} $month ${now.year}';
   }
 }

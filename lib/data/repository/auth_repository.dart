@@ -34,6 +34,14 @@ class AuthRepository {
       accessToken: accessToken,
       refreshToken: refreshToken,
     );
+
+    if (logoutResult == null) {
+      throw RepositoryErrorException('Logout result returns null');
+    }
+
+    // clear local auth
+    await (_provider as AuthProvider).removeAuth();
+
     return logoutResult;
   }
 
