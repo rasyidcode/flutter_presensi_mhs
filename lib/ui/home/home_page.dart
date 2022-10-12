@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/home/home_state.dart';
-import 'package:flutter_presensi_mhs/ui/home/widgets/home_drawer.dart';
 import 'package:flutter_presensi_mhs/ui/home/widgets/matkul_item.dart';
 import 'package:flutter_presensi_mhs/ui/login/login_page.dart';
 import 'package:flutter_presensi_mhs/ui/scan/scan_page.dart';
@@ -34,126 +34,148 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _homeBloc.close();
+    _authBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthState authstate = _authBloc.state;
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (_) => _authBloc),
         BlocProvider<HomeBloc>(create: (_) => _homeBloc)
       ],
       child: MultiBlocListener(
-          listeners: [
-            BlocListener<AuthBloc, AuthState>(listener: (context, state) {
-              String? currentState =
-                  BlocProvider.of<HomeBloc>(context).state.currentState;
-              if (state.isHasAuth) {
-                bool? isDoneGetAuth = state.isDoneGetAuth;
-                if (isDoneGetAuth != null && isDoneGetAuth) {
-                  String? accessToken = state.auth.accessToken;
-                  if (accessToken != null) {
+        listeners: [
+          BlocListener<AuthBloc, AuthState>(listener: (context, state) {
+            String? currentState =
+                BlocProvider.of<HomeBloc>(context).state.currentState;
+            if (state.isHasAuth) {
+              bool? isDoneGetAuth = state.isDoneGetAuth;
+              if (isDoneGetAuth != null && isDoneGetAuth) {
+                String? accessToken = state.auth.accessToken;
+                if (accessToken != null) {
+                  BlocProvider.of<HomeBloc>(context).getListMatkul(accessToken);
+                }
+              }
+
+              bool? isDoneRenewToken = state.isDoneRenewToken;
+              if (isDoneRenewToken != null && isDoneRenewToken) {
+                String? accessToken = state.auth.accessToken;
+                if (accessToken != null && currentState != null) {
+                  if (currentState == 'get_list_matkul') {
                     BlocProvider.of<HomeBloc>(context)
                         .getListMatkul(accessToken);
-                  }
-                }
-
-                bool? isDoneRenewToken = state.isDoneRenewToken;
-                if (isDoneRenewToken != null && isDoneRenewToken) {
-                  String? accessToken = state.auth.accessToken;
-                  if (accessToken != null && currentState != null) {
-                    if (currentState == 'get_list_matkul') {
+                  } else if (currentState == 'do_presensi') {
+                    String? code =
+                        BlocProvider.of<HomeBloc>(context).state.currentCode;
+                    String? idJadwal = BlocProvider.of<HomeBloc>(context)
+                        .state
+                        .currentIdJadwal;
+                    if (code != null && idJadwal != null) {
                       BlocProvider.of<HomeBloc>(context)
-                          .getListMatkul(accessToken);
-                    } else if (currentState == 'do_presensi') {
-                      String? code =
-                          BlocProvider.of<HomeBloc>(context).state.currentCode;
-                      String? idJadwal = BlocProvider.of<HomeBloc>(context)
-                          .state
-                          .currentIdJadwal;
-                      if (code != null && idJadwal != null) {
-                        BlocProvider.of<HomeBloc>(context)
-                            .doPresensi(accessToken, code, idJadwal);
-                      }
+                          .doPresensi(accessToken, code, idJadwal);
                     }
                   }
                 }
               }
+            }
 
-              if (state.isError && currentState == 'get_list_matkul') {
+            if (state.isError && currentState == 'get_list_matkul') {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginPage()));
+            }
+
+            bool? isSuccessLogout = state.isSuccessLogout;
+            if (isSuccessLogout != null) {
+              if (!isSuccessLogout) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(state.error)));
+              } else {
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const LoginPage()));
               }
-
-              bool? isSuccessLogout = state.isSuccessLogout;
-              if (isSuccessLogout != null) {
-                if (!isSuccessLogout) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(state.error)));
-                } else {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const LoginPage()));
-                }
+            }
+          }),
+          BlocListener<HomeBloc, HomeState>(listener: (context, state) async {
+            bool? isTokenExpired = state.isTokenExpired;
+            var authstate = BlocProvider.of<AuthBloc>(context).state;
+            if (isTokenExpired != null && isTokenExpired) {
+              if (authstate.isHasAuth) {
+                BlocProvider.of<AuthBloc>(context).renewToken(authstate.auth);
               }
-            }),
-            BlocListener<HomeBloc, HomeState>(listener: (context, state) async {
-              bool? isTokenExpired = state.isTokenExpired;
-              if (isTokenExpired != null && isTokenExpired) {
-                if (authstate.isHasAuth) {
-                  BlocProvider.of<AuthBloc>(context).renewToken(authstate.auth);
-                }
-              }
+            }
 
-              if (state.isError && state.currentState == 'do_presensi') {
+            if (state.isError && state.currentState == 'do_presensi') {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+            }
+
+            bool? isSuccessCheckPresensi =
+                BlocProvider.of<HomeBloc>(context).state.isSuccessCheckPresensi;
+            if (isSuccessCheckPresensi != null) {
+              if (!isSuccessCheckPresensi) {
+                String error = state.error;
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(state.error)));
-              }
+                    .showSnackBar(SnackBar(content: Text(error)));
+              } else {
+                String? accessToken = authstate.auth.accessToken;
+                String? idJadwal = state.currentIdJadwal;
+                if (accessToken != null && idJadwal != null) {
+                  String code = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const ScanPage()));
 
-              bool? isSuccessCheckPresensi = BlocProvider.of<HomeBloc>(context)
-                  .state
-                  .isSuccessCheckPresensi;
-              if (isSuccessCheckPresensi != null) {
-                if (!isSuccessCheckPresensi) {
-                  String error = state.error;
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(error)));
+                  if (!mounted) return;
+
+                  BlocProvider.of<HomeBloc>(context)
+                      .doPresensi(accessToken, code, idJadwal);
                 } else {
-                  String? accessToken = authstate.auth.accessToken;
-                  String? idJadwal = state.currentIdJadwal;
-                  if (accessToken != null && idJadwal != null) {
-                    String code = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const ScanPage()));
-
-                    if (!mounted) return;
-
-                    BlocProvider.of<HomeBloc>(context)
-                        .doPresensi(accessToken, code, idJadwal);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content:
-                            Text('Something went wrong! code: #home_page')));
-                  }
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Something went wrong! code: #home_page')));
                 }
               }
-            }),
-          ],
-          child: Scaffold(
+            }
+          }),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, authstate) {
+          String? accessToken = authstate.auth.accessToken;
+
+          return Scaffold(
             appBar: AppBar(
               backgroundColor: kPrimaryColor,
-              title: const Text(
-                'Home Page',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
+              title: accessToken != null && accessToken.isNotEmpty
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          accessToken.jwtDecode().name,
+                          style:
+                              Theme.of(context).textTheme.headline6?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                        ),
+                        Text(
+                          accessToken.jwtDecode().id,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      BlocProvider.of<AuthBloc>(context).logout(authstate.auth);
+                    },
+                    icon: const Icon(Icons.logout_outlined))
+              ],
             ),
             backgroundColor: Colors.white,
-            drawer: const HomeDrawer(),
             body: RefreshIndicator(
               onRefresh: () async {
                 String? accessToken = authstate.auth.accessToken;
@@ -175,36 +197,34 @@ class _HomePageState extends State<HomePage> {
                       style: Theme.of(context).textTheme.bodyText2,
                     ),
                     const Divider(),
-                    Expanded(
-                      child: BlocBuilder<HomeBloc, HomeState>(
-                        builder: (context, state) {
-                          bool? isLoading = state.isLoading;
-                          bool? isLoadingAuth = authstate.isLoading;
-                          if (isLoading != null && isLoadingAuth != null) {
-                            if (isLoading || isLoadingAuth) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
+                    BlocBuilder<HomeBloc, HomeState>(
+                      builder: (context, state) {
+                        bool? isLoading = state.isLoading;
+                        bool? isLoadingAuth = authstate.isLoading;
+                        if (isLoading != null && isLoadingAuth != null) {
+                          if (isLoading || isLoadingAuth) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
+                        }
 
-                          bool? isTokenExpired = state.isTokenExpired;
-                          if (state.isError && isTokenExpired == null) {
-                            if (state.currentState == 'get_list_matkul') {
-                              return Center(child: Text(state.error));
-                            }
+                        bool? isTokenExpired = state.isTokenExpired;
+                        if (state.isError && isTokenExpired == null) {
+                          if (state.currentState == 'get_list_matkul') {
+                            return Center(child: Text(state.error));
                           }
-                          log('matkul data length: ${state.matkulData.length}');
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: state.matkulData.length,
-                            itemBuilder: (context, index) {
-                              return MatkulItem(
-                                  perkuliahanItem: state.matkulData[index]);
-                            },
-                          );
-                        },
-                      ),
+                        }
+                        log('matkul data length: ${state.matkulData.length}');
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: state.matkulData.length,
+                          itemBuilder: (context, index) {
+                            return MatkulItem(
+                                perkuliahanItem: state.matkulData[index]);
+                          },
+                        );
+                      },
                     )
                   ],
                 ),
@@ -220,7 +240,9 @@ class _HomePageState extends State<HomePage> {
               child: const Icon(Icons.refresh),
               backgroundColor: kPrimaryColor,
             ),
-          )),
+          );
+        }),
+      ),
     );
   }
 

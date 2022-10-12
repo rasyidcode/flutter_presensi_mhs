@@ -45,8 +45,8 @@ class PresensiAppApi {
     final response = await _client.post(
       Uri.parse(urlEncoded),
       headers: {
-        HttpHeaders.authorizationHeader: accessToken,
-        'RefreshToken': refreshToken,
+        HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+        'Refresh-Token': refreshToken,
       },
     );
 
