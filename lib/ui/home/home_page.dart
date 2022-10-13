@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_presensi_mhs/constants.dart';
+import 'package:flutter_presensi_mhs/data/model/perkuliahan/presensi_result.dart';
 import 'package:flutter_presensi_mhs/extensions/string_extensions.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_bloc.dart';
 import 'package:flutter_presensi_mhs/ui/auth/auth_state.dart';
@@ -137,6 +138,12 @@ class _HomePageState extends State<HomePage> {
                       content: Text('Something went wrong! code: #home_page')));
                 }
               }
+            }
+
+            PresensiResult? presensiResult = state.presensiResult;
+            if (presensiResult != null && presensiResult.message.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(presensiResult.message)));
             }
           }),
         ],
