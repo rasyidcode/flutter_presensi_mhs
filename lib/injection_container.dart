@@ -16,10 +16,11 @@ import 'package:sqflite/sqflite.dart';
 
 Future initKiwi() async {
   String dbPath = await getDatabasesPath();
+  print('initiating dependency injection...');
   KiwiContainer()
     ..registerInstance(http.Client())
     ..registerFactory((container) => PresensiAppDb(dbPath))
-    // api
+    // api see
     ..registerFactory((container) => PresensiAppApi(container.resolve()))
     // provider
     ..registerFactory((container) => AppProvider(container.resolve()))
